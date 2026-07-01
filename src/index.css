@@ -420,6 +420,11 @@ h1, h2, h3, h4, h5, h6 {
 }
 .login-btn:hover { opacity: 0.88; }
 .login-btn:focus-visible { outline: 2px solid var(--brand-primary, #6366f1); outline-offset: 2px; }
+.login-error {
+  margin: -4px 0 4px; padding: 9px 12px; border-radius: 8px;
+  background: #fef2f2; color: #b91c1c; font-size: 13px; border: 1px solid #fecaca;
+  text-align: center;
+}
 
 /* ===== Dashboard Layout ===== */
 .dashboard { display: flex; flex-direction: column; height: 100vh; background: #f5f3ff; }
@@ -737,8 +742,16 @@ h1, h2, h3, h4, h5, h6 {
 .portal-welcome-header {
   max-width: 760px; margin: 0 auto 30px; text-align: center;
 }
+/* Brand-name line above the title — match the title's font + weight, sized up. */
+.portal-welcome-header .section-eyebrow {
+  font-family: 'Poppins', 'Open Sans', sans-serif;
+  font-weight: 800;
+  font-size: 26px;
+  letter-spacing: 0.01em;
+  gap: 8px;
+}
 .portal-welcome-header .homepage-section-title {
-  font-size: 40px; font-weight: 800; margin: 12px 0 16px;
+  font-size: 28px; font-weight: 800; margin: 12px 0 16px;
   letter-spacing: -0.02em; line-height: 1.1;
 }
 .portal-welcome-desc {

@@ -96,7 +96,7 @@ export default function Overview({ onNavigate }) {
       <div className="portal-welcome">
         <div className="portal-welcome-header">
           <div className="section-eyebrow center" style={{ color: brand.primaryColor }}>
-            <Sparkles size={16} /> {brand.name}
+            <Sparkles size={22} /> {brand.name}
           </div>
           <h3 className="homepage-section-title center">
             Welcome to your <span style={{ color: brand.primaryColor }}>AI Analytics</span> Portal

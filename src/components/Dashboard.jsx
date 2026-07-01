@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { useBrand } from '../context/BrandContext'
 import Overview from './tabs/Overview'
 import AIChat from './tabs/AIChat'
 import SearchTab from './tabs/Search'
 import Flights from './tabs/Flights'
 import Hub from './tabs/Hub'
-import { Sun, Moon, LogOut, Settings, LayoutDashboard, MessageCircle, MonitorDot, Plane, Sparkles, FolderKanban } from 'lucide-react'
+import { Sun, Moon, LogOut, LayoutDashboard, MessageCircle, MonitorDot, Plane, Sparkles, FolderKanban } from 'lucide-react'
 import { getContrastColor } from '../utils/colors'
 
 const tabs = [
@@ -29,7 +28,6 @@ export default function Dashboard({ onLogout }) {
   const [activeTab, setActiveTab] = useState('overview')
   const [darkMode, setDarkMode] = useState(false)
   const { brand, currentUser } = useBrand()
-  const navigate = useNavigate()
 
   // Flights tab is hard-wired to the Port-of-Seattle demo (region-based access
   // filter on the flights topic). Hide it entirely when the `region` user
@@ -103,14 +101,6 @@ export default function Dashboard({ onLogout }) {
           </button>
           <button className="btn-icon" onClick={onLogout} title="Logout">
             <LogOut size={20} />
-          </button>
-          <button
-            className="dashboard-avatar"
-            style={{ borderColor: brand.primaryColor, cursor: 'pointer' }}
-            onClick={() => navigate('/config')}
-            title="Back to Configuration"
-          >
-            <Settings size={18} />
           </button>
         </div>
       </header>

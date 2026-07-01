@@ -2,7 +2,7 @@ import { createContext, useContext, useState } from 'react'
 
 const BrandContext = createContext()
 
-const defaultBrand = {
+export const defaultBrand = {
   // Pre-configured so the Config page skips its auto-scan-on-mount and
   // shows these baked-in SEATAC defaults verbatim. Users can still click
   // Scan to refresh from the live portseattle.org site if they want.
