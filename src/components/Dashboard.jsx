@@ -31,6 +31,8 @@ export default function Dashboard({ onLogout }) {
   const [pushEnabled, setPushEnabled] = useState(false)
   const [pushSupported, setPushSupported] = useState(true)
   const [pushReady, setPushReady] = useState(false)
+  const [pushSending, setPushSending] = useState(false)
+  const [pushFeedback, setPushFeedback] = useState('')
   const { brand, currentUser } = useBrand()
 
   // Flights tab is hard-wired to the Port-of-Seattle demo (region-based access
@@ -75,6 +77,8 @@ export default function Dashboard({ onLogout }) {
   }, [])
 
   const handlePushClick = async () => {
+    if (pushSending) return
+    setPushFeedback('')
     try {
       const OneSignal = await initializeOneSignal()
       if (!OneSignal) return
@@ -82,11 +86,32 @@ export default function Dashboard({ onLogout }) {
         setPushSupported(false)
         return
       }
-      await OneSignal.User.PushSubscription.optIn()
-      const optedIn = Boolean(OneSignal.User.PushSubscription.optedIn)
+      if (!OneSignal.User.PushSubscription.optedIn) {
+        await OneSignal.User.PushSubscription.optIn()
+      }
+      const subscription = OneSignal.User.PushSubscription
+      const subscriptionId = subscription.id
+      const optedIn = Boolean(subscription.optedIn)
       setPushEnabled(optedIn)
+      if (!optedIn || !subscriptionId) {
+        setPushFeedback('Allow notifications in your browser, then click the bell again.')
+        return
+      }
+
+      setPushSending(true)
+      const response = await fetch('/api/onesignal-send-template', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ subscriptionId }),
+      })
+      const result = await response.json().catch(() => ({}))
+      if (!response.ok) throw new Error(result.error || 'Could not send the push message.')
+      setPushFeedback('Push message sent.')
     } catch (error) {
       console.error('Could not enable push notifications:', error)
+      setPushFeedback(error.message || 'Could not send the push message.')
+    } finally {
+      setPushSending(false)
     }
   }
 
@@ -142,9 +167,9 @@ export default function Dashboard({ onLogout }) {
             <button
               className="btn-icon"
               onClick={handlePushClick}
-              title={!pushSupported ? 'Push notifications are not supported in this browser' : pushEnabled ? 'Notifications enabled' : 'Enable notifications'}
-              aria-label={!pushSupported ? 'Push notifications are not supported' : pushEnabled ? 'Notifications enabled' : 'Enable notifications'}
-              disabled={!pushReady || !pushSupported || pushEnabled}
+              title={!pushSupported ? 'Push notifications are not supported in this browser' : pushEnabled ? 'Send a push message' : 'Enable notifications'}
+              aria-label={!pushSupported ? 'Push notifications are not supported' : pushEnabled ? 'Send a push message' : 'Enable notifications'}
+              disabled={!pushReady || !pushSupported || pushSending}
             >
               <Bell size={20} />
             </button>
@@ -161,6 +186,12 @@ export default function Dashboard({ onLogout }) {
           </button>
         </div>
       </header>
+
+      {pushFeedback && (
+        <div role="status" aria-live="polite" style={{ position: 'fixed', top: 72, right: 16, zIndex: 1000, padding: '10px 14px', borderRadius: 8, background: '#fff', color: '#312e81', boxShadow: '0 4px 18px rgba(15, 23, 42, 0.18)', fontSize: 13 }}>
+          {pushFeedback}
+        </div>
+      )}
 
       <main className="dashboard-main">
         <div className="dashboard-content">
