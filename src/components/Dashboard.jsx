@@ -31,6 +31,7 @@ export default function Dashboard({ onLogout }) {
   const [pushEnabled, setPushEnabled] = useState(false)
   const [pushSupported, setPushSupported] = useState(true)
   const [pushReady, setPushReady] = useState(false)
+  const [pushMessage, setPushMessage] = useState('')
   const { brand, currentUser } = useBrand()
 
   // Flights tab is hard-wired to the Port-of-Seattle demo (region-based access
@@ -51,15 +52,29 @@ export default function Dashboard({ onLogout }) {
   useEffect(() => {
     if (!isOneSignalConfigured()) return
     let mounted = true
+    let oneSignalInstance
+    const onSubscriptionChange = event => {
+      const optedIn = Boolean(event.current.optedIn)
+      setPushEnabled(optedIn)
+      if (optedIn) setPushMessage('This browser is subscribed to OneSignal web push.')
+    }
+
     initializeOneSignal()
       .then(OneSignal => {
         if (!mounted || !OneSignal) return
+        oneSignalInstance = OneSignal
         setPushSupported(OneSignal.Notifications.isPushSupported())
-        setPushEnabled(Boolean(OneSignal.User.PushSubscription.optedIn))
+        OneSignal.User.PushSubscription.addEventListener('change', onSubscriptionChange)
+        const optedIn = Boolean(OneSignal.User.PushSubscription.optedIn)
+        setPushEnabled(optedIn)
+        if (optedIn) setPushMessage('This browser is subscribed to OneSignal web push.')
         setPushReady(true)
       })
       .catch(error => console.error('OneSignal initialization failed:', error))
-    return () => { mounted = false }
+    return () => {
+      mounted = false
+      oneSignalInstance?.User.PushSubscription.removeEventListener('change', onSubscriptionChange)
+    }
   }, [])
 
   const handlePushClick = async () => {
@@ -68,12 +83,25 @@ export default function Dashboard({ onLogout }) {
       if (!OneSignal) return
       if (!OneSignal.Notifications.isPushSupported()) {
         setPushSupported(false)
+        setPushMessage('This browser does not support web push notifications.')
         return
       }
+      setPushMessage('Choose Allow in the browser prompt to subscribe.')
       await OneSignal.User.PushSubscription.optIn()
-      setPushEnabled(Boolean(OneSignal.User.PushSubscription.optedIn))
+      const optedIn = Boolean(OneSignal.User.PushSubscription.optedIn)
+      setPushEnabled(optedIn)
+      if (optedIn) {
+        setPushMessage('This browser is subscribed to OneSignal web push. Send a test message from OneSignal to verify delivery.')
+      } else if (window.Notification?.permission === 'denied') {
+        setPushMessage('Notifications are blocked for this site. Allow them in your browser site settings, then try again.')
+      } else if (window.Notification?.permission === 'granted') {
+        setPushMessage('Browser permission is allowed, but OneSignal has not confirmed a subscription yet. Check the OneSignal Web Push site configuration.')
+      } else {
+        setPushMessage('No permission was granted. Click the bell and allow notifications to subscribe.')
+      }
     } catch (error) {
       console.error('Could not enable push notifications:', error)
+      setPushMessage('OneSignal could not enable web push. Check the browser console and OneSignal site configuration.')
     }
   }
 
@@ -148,6 +176,16 @@ export default function Dashboard({ onLogout }) {
           </button>
         </div>
       </header>
+
+      {pushMessage && (
+        <div
+          role="status"
+          aria-live="polite"
+          style={{ position: 'fixed', top: 72, right: 16, zIndex: 1000, maxWidth: 360, padding: '10px 14px', borderRadius: 8, background: '#fff', color: '#312e81', boxShadow: '0 4px 18px rgba(15, 23, 42, 0.18)', fontSize: 13 }}
+        >
+          {pushMessage}
+        </div>
+      )}
 
       <main className="dashboard-main">
         <div className="dashboard-content">
