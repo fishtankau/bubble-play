@@ -1,5 +1,5 @@
 const ONESIGNAL_SDK_URL = 'https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js'
-const appId = import.meta.env.VITE_ONESIGNAL_APP_ID
+const appId = import.meta.env.VITE_ONESIGNAL_APP_ID || '34b0ba78-2d0f-4762-855f-9a34900c5ea9'
 
 let initialization
 
