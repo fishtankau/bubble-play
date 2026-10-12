@@ -5,8 +5,9 @@ import AIChat from './tabs/AIChat'
 import SearchTab from './tabs/Search'
 import Flights from './tabs/Flights'
 import Hub from './tabs/Hub'
-import { Sun, Moon, LogOut, LayoutDashboard, MessageCircle, MonitorDot, Plane, Sparkles, FolderKanban } from 'lucide-react'
+import { Sun, Moon, LogOut, LayoutDashboard, MessageCircle, MonitorDot, Plane, Sparkles, FolderKanban, Bell } from 'lucide-react'
 import { getContrastColor } from '../utils/colors'
+import { initializeOneSignal, isOneSignalConfigured } from '../utils/oneSignal'
 
 const tabs = [
   { id: 'overview', label: 'Overview', icon: LayoutDashboard },
@@ -27,6 +28,8 @@ const tabComponents = {
 export default function Dashboard({ onLogout }) {
   const [activeTab, setActiveTab] = useState('overview')
   const [darkMode, setDarkMode] = useState(false)
+  const [pushEnabled, setPushEnabled] = useState(false)
+  const [pushSupported, setPushSupported] = useState(true)
   const { brand, currentUser } = useBrand()
 
   // Flights tab is hard-wired to the Port-of-Seattle demo (region-based access
@@ -43,6 +46,34 @@ export default function Dashboard({ onLogout }) {
 
   const ActiveComponent = tabComponents[activeTab]
   const activeBtnText = getContrastColor(brand.primaryColor)
+
+  useEffect(() => {
+    if (!isOneSignalConfigured()) return
+    let mounted = true
+    initializeOneSignal()
+      .then(OneSignal => {
+        if (!mounted || !OneSignal) return
+        setPushSupported(OneSignal.Notifications.isPushSupported())
+        setPushEnabled(Boolean(OneSignal.User.PushSubscription.optedIn))
+      })
+      .catch(error => console.error('OneSignal initialization failed:', error))
+    return () => { mounted = false }
+  }, [])
+
+  const handlePushClick = async () => {
+    try {
+      const OneSignal = await initializeOneSignal()
+      if (!OneSignal) return
+      if (!OneSignal.Notifications.isPushSupported()) {
+        setPushSupported(false)
+        return
+      }
+      await OneSignal.Notifications.requestPermission()
+      setPushEnabled(Boolean(OneSignal.User.PushSubscription.optedIn))
+    } catch (error) {
+      console.error('Could not enable push notifications:', error)
+    }
+  }
 
   const rawLogo = brand.logoUrl || brand.logo
   const logoSrc = rawLogo
@@ -92,6 +123,17 @@ export default function Dashboard({ onLogout }) {
             })}
           </nav>
         <div className="dashboard-header-actions">
+          {isOneSignalConfigured() && (
+            <button
+              className="btn-icon"
+              onClick={handlePushClick}
+              title={!pushSupported ? 'Push notifications are not supported in this browser' : pushEnabled ? 'Notifications enabled' : 'Enable notifications'}
+              aria-label={!pushSupported ? 'Push notifications are not supported' : pushEnabled ? 'Notifications enabled' : 'Enable notifications'}
+              disabled={!pushSupported || pushEnabled}
+            >
+              <Bell size={20} />
+            </button>
+          )}
           <button
             className="btn-icon"
             onClick={() => setDarkMode(!darkMode)}
