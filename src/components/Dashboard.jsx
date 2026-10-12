@@ -30,6 +30,7 @@ export default function Dashboard({ onLogout }) {
   const [darkMode, setDarkMode] = useState(false)
   const [pushEnabled, setPushEnabled] = useState(false)
   const [pushSupported, setPushSupported] = useState(true)
+  const [pushReady, setPushReady] = useState(false)
   const { brand, currentUser } = useBrand()
 
   // Flights tab is hard-wired to the Port-of-Seattle demo (region-based access
@@ -55,6 +56,7 @@ export default function Dashboard({ onLogout }) {
         if (!mounted || !OneSignal) return
         setPushSupported(OneSignal.Notifications.isPushSupported())
         setPushEnabled(Boolean(OneSignal.User.PushSubscription.optedIn))
+        setPushReady(true)
       })
       .catch(error => console.error('OneSignal initialization failed:', error))
     return () => { mounted = false }
@@ -68,7 +70,7 @@ export default function Dashboard({ onLogout }) {
         setPushSupported(false)
         return
       }
-      await OneSignal.Notifications.requestPermission()
+      await OneSignal.User.PushSubscription.optIn()
       setPushEnabled(Boolean(OneSignal.User.PushSubscription.optedIn))
     } catch (error) {
       console.error('Could not enable push notifications:', error)
@@ -129,7 +131,7 @@ export default function Dashboard({ onLogout }) {
               onClick={handlePushClick}
               title={!pushSupported ? 'Push notifications are not supported in this browser' : pushEnabled ? 'Notifications enabled' : 'Enable notifications'}
               aria-label={!pushSupported ? 'Push notifications are not supported' : pushEnabled ? 'Notifications enabled' : 'Enable notifications'}
-              disabled={!pushSupported || pushEnabled}
+              disabled={!pushReady || !pushSupported || pushEnabled}
             >
               <Bell size={20} />
             </button>
