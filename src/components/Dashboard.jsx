@@ -31,9 +31,6 @@ const tabComponents = {
 export default function Dashboard({ onLogout }) {
   const [activeTab, setActiveTab] = useState('overview')
   const [darkMode, setDarkMode] = useState(false)
-  const [pushEnabled, setPushEnabled] = useState(false)
-  const [pushSupported, setPushSupported] = useState(true)
-  const [pushReady, setPushReady] = useState(false)
   const [pushSending, setPushSending] = useState(false)
   const [pushFeedback, setPushFeedback] = useState('')
   const { brand, currentUser } = useBrand()
@@ -56,80 +53,23 @@ export default function Dashboard({ onLogout }) {
 
   useEffect(() => {
     if (!isOneSignalConfigured()) return
-    let mounted = true
-    let oneSignalInstance
-    const onSubscriptionChange = event => {
-      const optedIn = Boolean(event.current.optedIn)
-      setPushEnabled(optedIn)
-    }
-
-    initializeOneSignal()
-      .then(OneSignal => {
-        if (!mounted || !OneSignal) return
-        oneSignalInstance = OneSignal
-        setPushSupported(OneSignal.Notifications.isPushSupported())
-        OneSignal.User.PushSubscription.addEventListener('change', onSubscriptionChange)
-        const optedIn = Boolean(OneSignal.User.PushSubscription.optedIn)
-        setPushEnabled(optedIn)
-        setPushReady(true)
-      })
-      .catch(error => console.error('OneSignal initialization failed:', error))
-    return () => {
-      mounted = false
-      oneSignalInstance?.User.PushSubscription.removeEventListener('change', onSubscriptionChange)
-    }
+    initializeOneSignal().catch(error => console.error('OneSignal initialization failed:', error))
   }, [])
 
-  const handlePushClick = useCallback(async ({ broadcast = false, quiet = false } = {}) => {
+  const handlePushClick = useCallback(async ({ quiet = false } = {}) => {
     if (pushSending) return
     setPushFeedback('')
-    if (broadcast) {
-      setPushSending(true)
-      try {
-        const response = await fetch('/api/onesignal-send-template', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ sendToAll: true }),
-        })
-        const result = await response.json().catch(() => ({}))
-        if (!response.ok) throw new Error(result.error || 'Could not send the push message.')
-      } catch (error) {
-        console.error('Could not send the OneSignal broadcast:', error)
-        if (!quiet) setPushFeedback(error.message || 'Could not send the push message.')
-      } finally {
-        setPushSending(false)
-      }
-      return
-    }
+    setPushSending(true)
     try {
-      const OneSignal = await initializeOneSignal()
-      if (!OneSignal) return
-      if (!OneSignal.Notifications.isPushSupported()) {
-        setPushSupported(false)
-        return
-      }
-      if (!OneSignal.User.PushSubscription.optedIn) {
-        await OneSignal.User.PushSubscription.optIn()
-      }
-      const subscription = OneSignal.User.PushSubscription
-      const subscriptionId = subscription.id
-      const optedIn = Boolean(subscription.optedIn)
-      setPushEnabled(optedIn)
-      if (!optedIn || !subscriptionId) {
-        if (!quiet) setPushFeedback('Allow notifications in your browser, then click the bell again.')
-        return
-      }
-
-      setPushSending(true)
       const response = await fetch('/api/onesignal-send-template', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ subscriptionId }),
+        body: JSON.stringify({ sendToAll: true }),
       })
       const result = await response.json().catch(() => ({}))
       if (!response.ok) throw new Error(result.error || 'Could not send the push message.')
     } catch (error) {
-      console.error('Could not enable push notifications:', error)
+      console.error('Could not send the OneSignal broadcast:', error)
       if (!quiet) setPushFeedback(error.message || 'Could not send the push message.')
     } finally {
       setPushSending(false)
@@ -146,9 +86,7 @@ export default function Dashboard({ onLogout }) {
       // explicit bridge event; direct same-origin requests still use the API.
       if (event.origin !== 'null' && event.origin !== 'https://omni.demo.exploreomni.dev') return
       if (event.data?.type !== 'bubble-play:send-push' || event.data?.appId !== 'a810a3e6') return
-      // Send to the subscribed browser hosting Bubble Play. The broad
-      // "Subscribed Users" segment can resolve to no eligible recipients,
-      // while the site's own bell correctly targets this subscription ID.
+      // Send to every eligible subscriber in this OneSignal app.
       void handlePushClick({ quiet: true })
     }
     window.addEventListener('message', onEmbeddedPushRequest)
@@ -206,10 +144,10 @@ export default function Dashboard({ onLogout }) {
           {isOneSignalConfigured() && (
             <button
               className="btn-icon"
-              onClick={handlePushClick}
-              title={!pushSupported ? 'Push notifications are not supported in this browser' : pushEnabled ? 'Send a push message' : 'Enable notifications'}
-              aria-label={!pushSupported ? 'Push notifications are not supported' : pushEnabled ? 'Send a push message' : 'Enable notifications'}
-              disabled={!pushReady || !pushSupported || pushSending}
+              onClick={() => handlePushClick()}
+              title="Send a push message to all subscribers"
+              aria-label="Send a push message to all subscribers"
+              disabled={pushSending}
             >
               <Bell size={20} />
             </button>
