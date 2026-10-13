@@ -1,25 +1,40 @@
 const ONESIGNAL_APP_ID = process.env.ONESIGNAL_APP_ID || '34b0ba78-2d0f-4762-855f-9a34900c5ea9';
 const TEMPLATE_ID = 'efe57c9b-a8f2-48e9-b6c4-51e73e0475e6';
+const ALLOWED_ORIGINS = new Set([
+  'https://omni.demo.exploreomni.dev',
+  'https://bubble-play.vercel.app',
+]);
 
 export default async function handler(req, res) {
+  const origin = req.headers.origin;
+  const sendToAll = req.body?.sendToAll === true;
+
+  if (origin && !ALLOWED_ORIGINS.has(origin)) {
+    return res.status(403).json({ error: 'This request origin is not allowed' });
+  }
+
+  if (origin) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Vary', 'Origin');
+  }
+
+  if (req.method === 'OPTIONS') {
+    if (!origin || !ALLOWED_ORIGINS.has(origin)) {
+      return res.status(403).json({ error: 'This request origin is not allowed' });
+    }
+    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    res.setHeader('Access-Control-Max-Age', '600');
+    return res.status(204).end();
+  }
+
   if (req.method !== 'POST') {
-    res.setHeader('Allow', 'POST');
+    res.setHeader('Allow', 'POST, OPTIONS');
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  // The broadcast action is intended for same-origin requests from the app only.
-  const origin = req.headers.origin;
-  const host = req.headers.host;
-  const sendToAll = req.body?.sendToAll === true;
-  let originHost;
-  try { originHost = origin ? new URL(origin).host : null; } catch {
-    return res.status(403).json({ error: 'Invalid request origin' });
-  }
-  if (sendToAll && (!originHost || !host || originHost !== host)) {
-    return res.status(403).json({ error: 'Broadcast requests must come from this site' });
-  }
-  if (originHost && host && originHost !== host) {
-    return res.status(403).json({ error: 'Cross-origin requests are not allowed' });
+  if (sendToAll && (!origin || !ALLOWED_ORIGINS.has(origin))) {
+    return res.status(403).json({ error: 'Broadcast requests must come from an allowed app origin' });
   }
 
   const apiKey = process.env.ONESIGNAL_REST_API_KEY;
