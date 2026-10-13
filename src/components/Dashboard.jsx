@@ -1,19 +1,21 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useBrand } from '../context/BrandContext'
 import Overview from './tabs/Overview'
 import AIChat from './tabs/AIChat'
 import SearchTab from './tabs/Search'
 import Flights from './tabs/Flights'
 import Hub from './tabs/Hub'
-import { Sun, Moon, LogOut, LayoutDashboard, MessageCircle, MonitorDot, Plane, Sparkles, FolderKanban, Bell } from 'lucide-react'
+import { Sun, Moon, LogOut, LayoutDashboard, MessageCircle, MonitorDot, Plane, Sparkles, FolderKanban, Bell, PanelsTopLeft } from 'lucide-react'
 import { getContrastColor } from '../utils/colors'
 import { initializeOneSignal, isOneSignalConfigured } from '../utils/oneSignal'
+import AppTab from './tabs/App'
 
 const tabs = [
   { id: 'overview', label: 'Overview', icon: LayoutDashboard },
   { id: 'aichat', label: 'AI Chat', icon: MessageCircle },
   { id: 'search', label: 'Dashboard', icon: MonitorDot },
   { id: 'flights', label: 'Flights', icon: Plane },
+  { id: 'apps', label: 'App', icon: PanelsTopLeft },
   { id: 'hub', label: 'Hub', icon: FolderKanban },
 ]
 
@@ -21,6 +23,7 @@ const tabComponents = {
   overview: Overview,
   aichat: AIChat,
   search: SearchTab,
+  apps: AppTab,
   flights: Flights,
   hub: Hub,
 }
@@ -41,6 +44,7 @@ export default function Dashboard({ onLogout }) {
   // queries fail.
   const flightsHidden = brand.embedSendRegionAttribute === false
   const visibleTabs = flightsHidden ? tabs.filter(t => t.id !== 'flights') : tabs
+  const configuredTabs = visibleTabs.filter(t => t.id !== 'apps' || Boolean(brand.embedAppPath))
 
   // If user is currently on Flights but it just got hidden, bounce back to Overview.
   useEffect(() => {
@@ -76,9 +80,28 @@ export default function Dashboard({ onLogout }) {
     }
   }, [])
 
-  const handlePushClick = async () => {
+  const handlePushClick = useCallback(async ({ broadcast = false } = {}) => {
     if (pushSending) return
     setPushFeedback('')
+    if (broadcast) {
+      setPushSending(true)
+      try {
+        const response = await fetch('/api/onesignal-send-template', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ sendToAll: true }),
+        })
+        const result = await response.json().catch(() => ({}))
+        if (!response.ok) throw new Error(result.error || 'Could not send the push message.')
+        setPushFeedback('Push message sent to all subscribed browsers.')
+      } catch (error) {
+        console.error('Could not send the OneSignal broadcast:', error)
+        setPushFeedback(error.message || 'Could not send the push message.')
+      } finally {
+        setPushSending(false)
+      }
+      return
+    }
     try {
       const OneSignal = await initializeOneSignal()
       if (!OneSignal) return
@@ -106,14 +129,30 @@ export default function Dashboard({ onLogout }) {
       })
       const result = await response.json().catch(() => ({}))
       if (!response.ok) throw new Error(result.error || 'Could not send the push message.')
-      setPushFeedback('Push message sent.')
+      setPushFeedback('Push message sent to all subscribed browsers.')
     } catch (error) {
       console.error('Could not enable push notifications:', error)
       setPushFeedback(error.message || 'Could not send the push message.')
     } finally {
       setPushSending(false)
     }
-  }
+  }, [pushSending])
+
+  // The embedded Omni HTML app can post this event to the top-level Bubble Play
+  // window. Its sandbox blocks fetch(), so this parent makes the same-site API
+  // request after validating the source origin and the expected app identifier.
+  useEffect(() => {
+    const onEmbeddedPushRequest = event => {
+      // Omni renders custom app HTML in a sandboxed srcdoc, whose browser
+      // origin is "null". Accept that opaque origin only for this app's
+      // explicit bridge event; direct same-origin requests still use the API.
+      if (event.origin !== 'null' && event.origin !== 'https://omni.demo.exploreomni.dev') return
+      if (event.data?.type !== 'bubble-play:send-push' || event.data?.appId !== 'a810a3e6') return
+      void handlePushClick({ broadcast: true })
+    }
+    window.addEventListener('message', onEmbeddedPushRequest)
+    return () => window.removeEventListener('message', onEmbeddedPushRequest)
+  }, [handlePushClick])
 
   const rawLogo = brand.logoUrl || brand.logo
   const logoSrc = rawLogo
@@ -143,7 +182,7 @@ export default function Dashboard({ onLogout }) {
           </div>
         </div>
         <nav className="dashboard-tabs">
-            {visibleTabs.map(tab => {
+            {configuredTabs.map(tab => {
               const Icon = tab.icon
               const isActive = activeTab === tab.id
               return (

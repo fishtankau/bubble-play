@@ -10,6 +10,7 @@ export default function Login({ onLogin }) {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+  const passwordlessEducation = username.trim().toLowerCase() === 'education'
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -51,19 +52,26 @@ export default function Login({ onLogin }) {
             type="text"
             placeholder="Username"
             value={username}
-            onChange={e => { setUsername(e.target.value); setError('') }}
+            onChange={e => {
+              const nextUsername = e.target.value
+              setUsername(nextUsername)
+              if (nextUsername.trim().toLowerCase() === 'education') setPassword('')
+              setError('')
+            }}
             autoComplete="off"
             autoFocus
           />
         </div>
-        <div className="login-field">
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={e => { setPassword(e.target.value); setError('') }}
-          />
-        </div>
+        {!passwordlessEducation && (
+          <div className="login-field">
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={e => { setPassword(e.target.value); setError('') }}
+            />
+          </div>
+        )}
 
         {error && <div className="login-error">{error}</div>}
 

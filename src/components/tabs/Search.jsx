@@ -42,6 +42,7 @@ export default function SearchTab() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         secret: brand.embedSecret,
+        secretProfile: brand.embedSecretProfile,
         contentPath: brand.embedDashboardPath || '/dashboards/a73297b4',
         vanityDomain: brand.embedVanityDomain || '',
         customTheme: brand.embedThemeId ? undefined : customTheme,

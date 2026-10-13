@@ -18,6 +18,7 @@ export default function Overview({ onNavigate }) {
   const { brand } = useBrand()
   const palette = generatePalette(brand.primaryColor)
   const heroBtnText = getContrastColor(brand.primaryColor)
+  const educationMode = brand.name === 'Education'
 
   const hasProducts = brand.products?.length > 0
 
@@ -26,25 +27,25 @@ export default function Overview({ onNavigate }) {
     {
       id: 'aichat',
       icon: MessageCircle,
-      eyebrow: 'AI-powered',
-      title: 'Ask in Plain English',
-      desc: 'Get answers from your data by chatting with our AI agents — no SQL, no dashboards required.',
+      eyebrow: educationMode ? 'Learner support' : 'AI-powered',
+      title: educationMode ? 'Understand Learner Needs' : 'Ask in Plain English',
+      desc: educationMode ? 'Explore questions about student progress, engagement, and the support learners need.' : 'Get answers from your data by chatting with our AI agents — no SQL, no dashboards required.',
       cta: 'Open AI Chat',
     },
     {
       id: 'search',
       icon: MonitorDot,
-      eyebrow: 'Always on',
-      title: 'Live Dashboards',
-      desc: 'Browse curated metrics across your business with real-time, always-fresh dashboards.',
+      eyebrow: educationMode ? 'Student outcomes' : 'Always on',
+      title: educationMode ? 'Learner Outcomes' : 'Live Dashboards',
+      desc: educationMode ? 'Review enrollment, engagement, and student outcome trends in your education dashboard.' : 'Browse curated metrics across your business with real-time, always-fresh dashboards.',
       cta: 'View Dashboards',
     },
     {
       id: 'hub',
       icon: Wand2,
-      eyebrow: 'Self-serve',
-      title: 'Create Your Own',
-      desc: 'Spin up your own explorations and save them to your team hub — share with your org in a click.',
+      eyebrow: educationMode ? 'Explore' : 'Self-serve',
+      title: educationMode ? 'Build an Education View' : 'Create Your Own',
+      desc: educationMode ? 'Create and share focused views to help teams act on the information that matters to learners.' : 'Spin up your own explorations and save them to your team hub — share with your org in a click.',
       cta: 'Open Hub',
     },
   ]
@@ -102,8 +103,9 @@ export default function Overview({ onNavigate }) {
             Welcome to your <span style={{ color: brand.primaryColor }}>AI Analytics</span> Portal
           </h3>
           <p className="portal-welcome-desc">
-            Explore your data with our AI agents, live dashboards, or build your own —
-            everything you need to turn questions into answers, all in one place.
+            {educationMode
+              ? 'Explore learner outcomes, enrollment, and engagement through your dashboard, app, and AI tools.'
+              : 'Explore your data with our AI agents, live dashboards, or build your own — everything you need to turn questions into answers, all in one place.'}
           </p>
         </div>
 
@@ -183,20 +185,20 @@ export default function Overview({ onNavigate }) {
       <div className="homepage-stats" style={{ background: `linear-gradient(135deg, ${brand.primaryColor}, ${palette.primaryDark})` }}>
         <div className="stats-grid">
           <div className="stat-item">
-            <span className="stat-number" style={{ color: '#fff' }}>500+</span>
-            <span className="stat-label">Team Members</span>
+            <span className="stat-number" style={{ color: '#fff' }}>{educationMode ? '01' : '500+'}</span>
+            <span className="stat-label">{educationMode ? 'Student Success' : 'Team Members'}</span>
           </div>
           <div className="stat-item">
-            <span className="stat-number" style={{ color: '#fff' }}>50M+</span>
-            <span className="stat-label">Customers Served</span>
+            <span className="stat-number" style={{ color: '#fff' }}>{educationMode ? '02' : '50M+'}</span>
+            <span className="stat-label">{educationMode ? 'Enrollment' : 'Customers Served'}</span>
           </div>
           <div className="stat-item">
-            <span className="stat-number" style={{ color: '#fff' }}>25+</span>
-            <span className="stat-label">Countries</span>
+            <span className="stat-number" style={{ color: '#fff' }}>{educationMode ? '03' : '25+'}</span>
+            <span className="stat-label">{educationMode ? 'Engagement' : 'Countries'}</span>
           </div>
           <div className="stat-item">
-            <span className="stat-number" style={{ color: '#fff' }}>99.9%</span>
-            <span className="stat-label">Uptime</span>
+            <span className="stat-number" style={{ color: '#fff' }}>{educationMode ? '04' : '99.9%'}</span>
+            <span className="stat-label">{educationMode ? 'Learning Resources' : 'Uptime'}</span>
           </div>
         </div>
       </div>
@@ -204,30 +206,30 @@ export default function Overview({ onNavigate }) {
       {/* Life at Brand */}
       <div className="homepage-life">
         <div className="section-eyebrow center" style={{ color: brand.primaryColor }}>
-          <Star size={16} /> Life at {brand.name}
+          <Star size={16} /> {educationMode ? 'Every Learner, Supported' : `Life at ${brand.name}`}
         </div>
-        <h2 className="homepage-section-title center">Join Our Team</h2>
+        <h2 className="homepage-section-title center">{educationMode ? 'A Connected View of Education' : 'Join Our Team'}</h2>
         <div className="life-grid">
           <div className="life-card">
             <div className="life-card-icon" style={{ background: `${brand.primaryColor}15`, color: brand.primaryColor }}>
               <Heart size={24} />
             </div>
-            <h3>Diversity & Inclusion</h3>
-            <p>We celebrate differences and foster an inclusive environment where everyone can thrive.</p>
+              <h3>{educationMode ? 'Student Progress' : 'Diversity & Inclusion'}</h3>
+              <p>{educationMode ? 'Bring progress signals together to help teams understand how learners are doing.' : 'We celebrate differences and foster an inclusive environment where everyone can thrive.'}</p>
           </div>
           <div className="life-card">
             <div className="life-card-icon" style={{ background: `${brand.primaryColor}15`, color: brand.primaryColor }}>
               <Award size={24} />
             </div>
-            <h3>Rewards & Benefits</h3>
-            <p>Competitive compensation, flexible working, and comprehensive benefits for all team members.</p>
+              <h3>{educationMode ? 'Engagement' : 'Rewards & Benefits'}</h3>
+              <p>{educationMode ? 'Explore engagement patterns and identify where timely support can make a difference.' : 'Competitive compensation, flexible working, and comprehensive benefits for all team members.'}</p>
           </div>
           <div className="life-card">
             <div className="life-card-icon" style={{ background: `${brand.primaryColor}15`, color: brand.primaryColor }}>
               <Globe size={24} />
             </div>
-            <h3>Community</h3>
-            <p>Making a positive impact through community partnerships and sustainability initiatives.</p>
+              <h3>{educationMode ? 'Learning Resources' : 'Community'}</h3>
+              <p>{educationMode ? 'Connect resource usage with outcomes to see what helps students move forward.' : 'Making a positive impact through community partnerships and sustainability initiatives.'}</p>
           </div>
         </div>
       </div>

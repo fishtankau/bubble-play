@@ -33,6 +33,7 @@ export default function AIChat() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         secret: brand.embedSecret,
+        secretProfile: brand.embedSecretProfile,
         contentPath: '/chat',
         vanityDomain: brand.embedVanityDomain || '',
         connectionRoles,

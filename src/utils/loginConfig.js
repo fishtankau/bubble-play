@@ -41,8 +41,44 @@ const INDUSTRY_LOGINS = {
   vincent: { password: 'endowus', industry: 'Fintech App Analytics' },
 }
 
+const EDUCATION_BRAND = {
+  ...defaultBrand,
+  configured: true,
+  name: 'Education',
+  logo: '',
+  logoUrl: '/logos/education.svg',
+  primaryColor: '#2563eb',
+  secondaryColor: '#0f172a',
+  description: 'A connected view of student outcomes, enrollment, and the day-to-day work that supports every learner.',
+  keyMessages: ['Better insights for every learner.'],
+  products: [],
+  omniApiKey: 'env',
+  embedSecret: 'env',
+  embedSecretProfile: 'education-dashboard',
+  embedVanityDomain: 'trial.omniapp.co',
+  embedDashboardPath: '/dashboards/a6d31aba',
+  embedThemeId: '479284cf-da03-4107-805d-f757bdb9bc09',
+  embedAppPath: '/apps/a810a3e6',
+  embedAppSecretProfile: 'education-app',
+  embedAppVanityDomain: 'omni.demo.exploreomni.dev',
+  embedAppThemeId: '',
+  embedSendRegionAttribute: false,
+  embedEntityKey: 'education',
+}
+
 export function resolveLogin(rawId, password) {
   const id = (rawId || '').trim().toLowerCase()
+
+  if (id === 'education') {
+    if ((password || '').trim()) {
+      return { ok: false, error: 'Education login does not use a password.' }
+    }
+    return {
+      ok: true,
+      brand: EDUCATION_BRAND,
+      user: { ...resolveUser(id), externalId: 'education-demo-user', name: 'Education Demo User' },
+    }
+  }
 
   const special = INDUSTRY_LOGINS[id]
   if (special) {

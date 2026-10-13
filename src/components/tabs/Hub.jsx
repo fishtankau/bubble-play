@@ -56,6 +56,7 @@ export default function Hub() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         secret: brand.embedSecret,
+        secretProfile: brand.embedSecretProfile,
         contentPath: '/root',
         vanityDomain: brand.embedVanityDomain || '',
         connectionRoles,
