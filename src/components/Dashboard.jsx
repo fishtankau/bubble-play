@@ -148,7 +148,10 @@ export default function Dashboard({ onLogout }) {
       // explicit bridge event; direct same-origin requests still use the API.
       if (event.origin !== 'null' && event.origin !== 'https://omni.demo.exploreomni.dev') return
       if (event.data?.type !== 'bubble-play:send-push' || event.data?.appId !== 'a810a3e6') return
-      void handlePushClick({ broadcast: true })
+      // Send to the subscribed browser hosting Bubble Play. The broad
+      // "Subscribed Users" segment can resolve to no eligible recipients,
+      // while the site's own bell correctly targets this subscription ID.
+      void handlePushClick()
     }
     window.addEventListener('message', onEmbeddedPushRequest)
     return () => window.removeEventListener('message', onEmbeddedPushRequest)
