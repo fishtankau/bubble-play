@@ -1,5 +1,6 @@
 const ONESIGNAL_APP_ID = process.env.ONESIGNAL_APP_ID || '34b0ba78-2d0f-4762-855f-9a34900c5ea9';
 const TEMPLATE_ID = 'efe57c9b-a8f2-48e9-b6c4-51e73e0475e6';
+const ALL_SUBSCRIPTIONS_SEGMENT = 'Total Subscriptions';
 const ALLOWED_ORIGINS = new Set([
   'https://omni.demo.exploreomni.dev',
   'https://bubble-play.vercel.app',
@@ -59,7 +60,7 @@ export default async function handler(req, res) {
         app_id: ONESIGNAL_APP_ID,
         target_channel: 'push',
         ...(sendToAll
-          ? { included_segments: ['Subscribed Users'] }
+          ? { included_segments: [ALL_SUBSCRIPTIONS_SEGMENT] }
           : { include_subscription_ids: [subscriptionId] }),
         template_id: TEMPLATE_ID,
       }),
