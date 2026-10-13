@@ -7,10 +7,18 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  // This endpoint is intended for same-origin requests from the app only.
+  // The broadcast action is intended for same-origin requests from the app only.
   const origin = req.headers.origin;
   const host = req.headers.host;
-  if (origin && host && new URL(origin).host !== host) {
+  const sendToAll = req.body?.sendToAll === true;
+  let originHost;
+  try { originHost = origin ? new URL(origin).host : null; } catch {
+    return res.status(403).json({ error: 'Invalid request origin' });
+  }
+  if (sendToAll && (!originHost || !host || originHost !== host)) {
+    return res.status(403).json({ error: 'Broadcast requests must come from this site' });
+  }
+  if (originHost && host && originHost !== host) {
     return res.status(403).json({ error: 'Cross-origin requests are not allowed' });
   }
 
@@ -20,7 +28,7 @@ export default async function handler(req, res) {
   }
 
   const subscriptionId = req.body?.subscriptionId;
-  if (typeof subscriptionId !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(subscriptionId)) {
+  if (!sendToAll && (typeof subscriptionId !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(subscriptionId))) {
     return res.status(400).json({ error: 'A valid OneSignal subscription ID is required' });
   }
 
@@ -35,7 +43,9 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         app_id: ONESIGNAL_APP_ID,
         target_channel: 'push',
-        include_subscription_ids: [subscriptionId],
+        ...(sendToAll
+          ? { included_segments: ['Subscribed Users'] }
+          : { include_subscription_ids: [subscriptionId] }),
         template_id: TEMPLATE_ID,
       }),
       signal: AbortSignal.timeout(15000),
