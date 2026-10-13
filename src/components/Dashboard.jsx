@@ -80,7 +80,7 @@ export default function Dashboard({ onLogout }) {
     }
   }, [])
 
-  const handlePushClick = useCallback(async ({ broadcast = false } = {}) => {
+  const handlePushClick = useCallback(async ({ broadcast = false, quiet = false } = {}) => {
     if (pushSending) return
     setPushFeedback('')
     if (broadcast) {
@@ -93,10 +93,10 @@ export default function Dashboard({ onLogout }) {
         })
         const result = await response.json().catch(() => ({}))
         if (!response.ok) throw new Error(result.error || 'Could not send the push message.')
-        setPushFeedback('OneSignal accepted the push request. Device delivery is not confirmed here.')
+        if (!quiet) setPushFeedback('OneSignal accepted the push request. Device delivery is not confirmed here.')
       } catch (error) {
         console.error('Could not send the OneSignal broadcast:', error)
-        setPushFeedback(error.message || 'Could not send the push message.')
+        if (!quiet) setPushFeedback(error.message || 'Could not send the push message.')
       } finally {
         setPushSending(false)
       }
@@ -117,7 +117,7 @@ export default function Dashboard({ onLogout }) {
       const optedIn = Boolean(subscription.optedIn)
       setPushEnabled(optedIn)
       if (!optedIn || !subscriptionId) {
-        setPushFeedback('Allow notifications in your browser, then click the bell again.')
+        if (!quiet) setPushFeedback('Allow notifications in your browser, then click the bell again.')
         return
       }
 
@@ -129,10 +129,10 @@ export default function Dashboard({ onLogout }) {
       })
       const result = await response.json().catch(() => ({}))
       if (!response.ok) throw new Error(result.error || 'Could not send the push message.')
-      setPushFeedback('OneSignal accepted the push request. Device delivery is not confirmed here.')
+      if (!quiet) setPushFeedback('OneSignal accepted the push request. Device delivery is not confirmed here.')
     } catch (error) {
       console.error('Could not enable push notifications:', error)
-      setPushFeedback(error.message || 'Could not send the push message.')
+      if (!quiet) setPushFeedback(error.message || 'Could not send the push message.')
     } finally {
       setPushSending(false)
     }
@@ -151,7 +151,7 @@ export default function Dashboard({ onLogout }) {
       // Send to the subscribed browser hosting Bubble Play. The broad
       // "Subscribed Users" segment can resolve to no eligible recipients,
       // while the site's own bell correctly targets this subscription ID.
-      void handlePushClick()
+      void handlePushClick({ quiet: true })
     }
     window.addEventListener('message', onEmbeddedPushRequest)
     return () => window.removeEventListener('message', onEmbeddedPushRequest)
