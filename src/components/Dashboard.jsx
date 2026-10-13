@@ -93,7 +93,7 @@ export default function Dashboard({ onLogout }) {
         })
         const result = await response.json().catch(() => ({}))
         if (!response.ok) throw new Error(result.error || 'Could not send the push message.')
-        setPushFeedback('Push message sent to all subscribed browsers.')
+        setPushFeedback('OneSignal accepted the push request. Device delivery is not confirmed here.')
       } catch (error) {
         console.error('Could not send the OneSignal broadcast:', error)
         setPushFeedback(error.message || 'Could not send the push message.')
@@ -129,7 +129,7 @@ export default function Dashboard({ onLogout }) {
       })
       const result = await response.json().catch(() => ({}))
       if (!response.ok) throw new Error(result.error || 'Could not send the push message.')
-      setPushFeedback('Push message sent to all subscribed browsers.')
+      setPushFeedback('OneSignal accepted the push request. Device delivery is not confirmed here.')
     } catch (error) {
       console.error('Could not enable push notifications:', error)
       setPushFeedback(error.message || 'Could not send the push message.')

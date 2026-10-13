@@ -74,7 +74,20 @@ export default async function handler(req, res) {
       return res.status(response.status).json({ error: 'OneSignal could not send the push message' });
     }
 
-    return res.status(200).json({ id: data.id || null });
+    // OneSignal can return HTTP 200 when the request is valid but no message
+    // was created (for example, when the audience has no eligible push
+    // subscriptions). Do not report that case as a successful send.
+    if (typeof data.id !== 'string' || !data.id) {
+      console.warn('OneSignal accepted the request but did not create a message', {
+        sendToAll,
+        errors: data.errors || null,
+      });
+      return res.status(409).json({
+        error: 'OneSignal did not create a push message because no eligible subscribed browsers matched the audience.',
+      });
+    }
+
+    return res.status(200).json({ id: data.id });
   } catch (error) {
     console.error('OneSignal request failed:', error.message);
     return res.status(502).json({ error: 'Could not reach OneSignal' });
