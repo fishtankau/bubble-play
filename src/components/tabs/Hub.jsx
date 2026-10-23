@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useBrand } from '../../context/BrandContext'
-import { LayoutGrid, ArrowRight, FolderKanban, AlertCircle, Loader2, ExternalLink } from 'lucide-react'
+import { FolderKanban, AlertCircle, Loader2, ExternalLink } from 'lucide-react'
 import { embedUserAttributes } from '../../utils/userAttributes'
 
 // Omni APPLICATION-mode Hub embed. Lands users on the org-wide Hub
@@ -133,29 +133,8 @@ export default function Hub({ onNavigate }) {
     )
   }
 
-  const hubApps = Array.isArray(brand.hubApps) ? brand.hubApps : []
-
   return (
     <div className="tab-embed">
-      {hubApps.length > 0 && (
-        <div className="hub-apps">
-          {hubApps.map(app => (
-            <button
-              key={app.id}
-              type="button"
-              className="hub-app-card"
-              onClick={() => onNavigate?.(`app:${app.id}`)}
-              style={{ borderColor: `${brand.primaryColor}33` }}
-            >
-              <span className="hub-app-icon" style={{ background: `${brand.primaryColor}15`, color: brand.primaryColor }}>
-                <LayoutGrid size={16} />
-              </span>
-              <span className="hub-app-label">{app.label}</span>
-              <ArrowRight size={14} className="hub-app-arrow" />
-            </button>
-          ))}
-        </div>
-      )}
       {embedUrl && (
         <iframe
           src={embedUrl}
