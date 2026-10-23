@@ -1350,3 +1350,153 @@ button.dashboard-avatar:focus-visible { outline: 2px solid #6366f1; outline-offs
   width: 28px; height: 28px; border-radius: 8px; flex-shrink: 0;
 }
 .hub-app-arrow { color: #94a3b8; flex-shrink: 0; }
+
+/* ── Custom Fleet Overview (AUfleet / NZfleet only) ──────────────────── */
+.ovf { display: flex; flex-direction: column; }
+.ovf-eyebrow {
+  display: inline-flex; align-items: center; align-self: flex-start;
+  padding: 6px 13px; border-radius: 999px;
+  font-size: 11.5px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+}
+.ovf-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 13px 22px; border-radius: 999px; border: 1.5px solid transparent;
+  font-family: 'Poppins', sans-serif; font-size: 14.5px; font-weight: 600;
+  cursor: pointer; transition: transform 0.08s ease, opacity 0.15s ease;
+}
+.ovf-btn:hover { transform: translateY(-1px); }
+.ovf-btn-ghost { background: transparent; color: #fff; border-color: rgba(255,255,255,0.45); }
+.ovf-btn-ghost:hover { background: rgba(255,255,255,0.1); }
+
+/* Hero */
+.ovf-hero { padding: 76px 48px 84px; color: #fff; position: relative; overflow: hidden; }
+.ovf-hero-inner {
+  max-width: 1180px; margin: 0 auto; display: grid;
+  grid-template-columns: 1.15fr 0.85fr; gap: 56px; align-items: center;
+}
+.ovf-hero-copy { display: flex; flex-direction: column; gap: 20px; }
+.ovf-hero-title {
+  font-family: 'Poppins', sans-serif; font-size: 54px; line-height: 1.04;
+  font-weight: 800; letter-spacing: -1.6px; margin: 0;
+}
+.ovf-hero-sub { font-size: 17.5px; line-height: 1.65; color: rgba(255,255,255,0.86); max-width: 54ch; margin: 0; }
+.ovf-hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 6px; }
+.ovf-hero-art { display: flex; flex-direction: column; gap: 12px; }
+.ovf-hero-chip {
+  display: flex; align-items: center; gap: 13px; width: 100%;
+  padding: 16px 18px; border-radius: 16px; cursor: pointer; text-align: left;
+  background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.18);
+  color: #fff; font-family: inherit; font-size: 14.5px; font-weight: 600;
+  backdrop-filter: blur(6px);
+  transition: background 0.15s ease, transform 0.08s ease;
+}
+.ovf-hero-chip:hover { background: rgba(255,255,255,0.18); transform: translateX(3px); }
+.ovf-hero-chip-icon {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 36px; height: 36px; border-radius: 11px; flex-shrink: 0;
+}
+.ovf-hero-chip-label { flex: 1; }
+.ovf-hero-chip-arrow { opacity: 0.7; flex-shrink: 0; }
+
+/* Trust strip */
+.ovf-trust {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  max-width: 1180px; width: 100%; margin: -34px auto 0; padding: 26px 32px;
+  background: #fff; border-radius: 18px; border: 1px solid #eef0f4;
+  box-shadow: 0 12px 34px rgba(15, 23, 42, 0.08); position: relative; z-index: 2;
+}
+.ovf-trust-item { display: flex; flex-direction: column; gap: 4px; text-align: center; }
+.ovf-trust-value { font-family: 'Poppins', sans-serif; font-size: 29px; font-weight: 800; letter-spacing: -1px; }
+.ovf-trust-label { font-size: 12.5px; color: #64748b; }
+
+/* Value props */
+.ovf-values {
+  max-width: 1180px; margin: 0 auto; padding: 62px 48px 10px;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 34px;
+}
+.ovf-value { display: flex; flex-direction: column; gap: 10px; }
+.ovf-value-rule { width: 38px; height: 3px; border-radius: 2px; }
+.ovf-value-title { font-family: 'Poppins', sans-serif; font-size: 17px; font-weight: 700; color: #0f172a; margin: 0; }
+.ovf-value-body { font-size: 14.5px; line-height: 1.65; color: #64748b; margin: 0; }
+
+/* Alternating features */
+.ovf-feature {
+  max-width: 1180px; margin: 0 auto; padding: 58px 48px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center;
+}
+.ovf-feature-alt .ovf-feature-copy { order: 2; }
+.ovf-feature-copy { display: flex; flex-direction: column; gap: 16px; }
+.ovf-feature-title {
+  font-family: 'Poppins', sans-serif; font-size: 33px; line-height: 1.18;
+  font-weight: 800; letter-spacing: -0.9px; color: #0f172a; margin: 0;
+}
+.ovf-feature-body { font-size: 16px; line-height: 1.7; color: #475569; margin: 0; }
+.ovf-points { list-style: none; display: flex; flex-direction: column; gap: 10px; margin: 4px 0 0; padding: 0; }
+.ovf-points li { display: flex; align-items: center; gap: 10px; font-size: 14.5px; color: #334155; }
+.ovf-link {
+  display: inline-flex; align-items: center; gap: 7px; align-self: flex-start;
+  background: none; border: none; padding: 4px 0; cursor: pointer;
+  font-family: 'Poppins', sans-serif; font-size: 14.5px; font-weight: 700;
+}
+.ovf-link:hover { gap: 11px; }
+
+/* Feature visual */
+.ovf-visual { display: flex; justify-content: center; }
+.ovf-visual-flip { order: 1; }
+.ovf-visual-scene {
+  position: relative; width: 100%; aspect-ratio: 4 / 3; border-radius: 24px;
+  overflow: hidden; display: flex; align-items: center; justify-content: center;
+  border: 1px solid #eef0f4;
+}
+.ovf-visual-blob { position: absolute; width: 230px; height: 230px; border-radius: 50%; top: -58px; right: -48px; filter: blur(2px); }
+.ovf-visual-blob-2 { width: 180px; height: 180px; top: auto; right: auto; bottom: -52px; left: -42px; }
+.ovf-visual-glyph { position: relative; opacity: 0.9; }
+.ovf-metric-card {
+  position: absolute; left: 24px; bottom: 24px; display: flex; flex-direction: column; gap: 2px;
+  padding: 14px 18px; border-radius: 15px; background: #fff;
+  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.14);
+}
+.ovf-metric-value { font-family: 'Poppins', sans-serif; font-size: 25px; font-weight: 800; letter-spacing: -0.8px; }
+.ovf-metric-caption { font-size: 11.5px; color: #64748b; }
+
+/* Services */
+.ovf-services { max-width: 1180px; margin: 0 auto; padding: 56px 48px 20px; }
+.ovf-section-head { display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center; margin-bottom: 38px; }
+.ovf-section-head .ovf-eyebrow { align-self: center; }
+.ovf-section-title {
+  font-family: 'Poppins', sans-serif; font-size: 35px; font-weight: 800;
+  letter-spacing: -1px; color: #0f172a; margin: 0;
+}
+.ovf-section-sub { font-size: 16px; line-height: 1.65; color: #64748b; max-width: 60ch; margin: 0; }
+.ovf-service-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+.ovf-service {
+  display: flex; flex-direction: column; gap: 12px; padding: 26px 24px;
+  background: #fff; border: 1px solid #eef0f4; border-radius: 18px;
+  transition: transform 0.1s ease, box-shadow 0.18s ease;
+}
+.ovf-service:hover { transform: translateY(-3px); box-shadow: 0 14px 32px rgba(15, 23, 42, 0.09); }
+.ovf-service-icon {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 42px; height: 42px; border-radius: 13px;
+}
+.ovf-service-title { font-family: 'Poppins', sans-serif; font-size: 17px; font-weight: 700; color: #0f172a; margin: 0; }
+.ovf-service-body { font-size: 14px; line-height: 1.65; color: #64748b; margin: 0; }
+
+/* Closing CTA */
+.ovf-cta {
+  margin: 56px 0 0; padding: 62px 48px 70px; color: #fff;
+  display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center;
+}
+.ovf-cta-title { font-family: 'Poppins', sans-serif; font-size: 34px; font-weight: 800; letter-spacing: -1px; margin: 0; }
+.ovf-cta-sub { font-size: 16.5px; color: rgba(255,255,255,0.88); margin: 0; }
+.ovf-cta-actions { justify-content: center; margin-top: 10px; }
+
+@media (max-width: 980px) {
+  .ovf-hero { padding: 54px 24px 64px; }
+  .ovf-hero-inner, .ovf-feature { grid-template-columns: 1fr; gap: 32px; }
+  .ovf-hero-title { font-size: 38px; letter-spacing: -1px; }
+  .ovf-feature, .ovf-values, .ovf-services { padding-left: 24px; padding-right: 24px; }
+  .ovf-feature-alt .ovf-feature-copy, .ovf-visual-flip { order: 0; }
+  .ovf-trust { grid-template-columns: repeat(2, 1fr); gap: 20px; margin-left: 24px; margin-right: 24px; width: auto; }
+  .ovf-values, .ovf-service-grid { grid-template-columns: 1fr; }
+}

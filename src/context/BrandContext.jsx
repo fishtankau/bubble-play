@@ -60,10 +60,18 @@ export function BrandProvider({ children }) {
     setBrand(prev => ({ ...prev, ...data, configured: true }))
   }
 
+  // Swap to a different brand wholesale. `updateBrand` merges, which leaks keys
+  // the incoming brand doesn't define (e.g. Custom Fleet's `appTabs` or
+  // Education's `embedAppPath` surviving a switch to SEATAC). Rebasing on
+  // defaultBrand resets anything the new brand omits.
+  const replaceBrand = (data) => {
+    setBrand({ ...defaultBrand, ...data, configured: true })
+  }
+
   const resetBrand = () => setBrand(defaultBrand)
 
   return (
-    <BrandContext.Provider value={{ brand, updateBrand, resetBrand, currentUser, setCurrentUser }}>
+    <BrandContext.Provider value={{ brand, updateBrand, replaceBrand, resetBrand, currentUser, setCurrentUser }}>
       {children}
     </BrandContext.Provider>
   )

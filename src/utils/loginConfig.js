@@ -109,6 +109,8 @@ const FLEET_CONSOLE_BRAND = {
     { name: 'Fleet Management', description: 'End-to-end support across accident management, insurance, maintenance and tyres, roadside assistance, registration, fuel cards and tolls.' },
     { name: 'Telematics & Driver Safety', description: 'Data-driven tools, including the Drive app, to support safer driving and lower risk across the fleet.' },
     { name: 'EV Transition', description: 'Fleet electrification and decarbonisation advisory to cut emissions and plan the move to electric.' },
+    { name: 'Operating Leasing', description: 'Business lease options including sale and leaseback, Next Lease, and tailored offers for small business fleets.' },
+    { name: 'Novated Leasing', description: 'Salary-packaged vehicle leasing for employees, bundled with insurance, calculators and current offers.' },
     { name: 'Strategic Advisory', description: 'Data-led consulting on cost pressure, regulatory change, utilisation reviews and transition planning.' },
   ],
   omniApiKey: 'env',

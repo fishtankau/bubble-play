@@ -9,7 +9,7 @@ const NEUTRAL_SECONDARY = '#1e1b4b'
 const proxied = url => `/api/proxy-image?url=${encodeURIComponent(url)}`
 
 export default function Login({ onLogin }) {
-  const { updateBrand, setCurrentUser } = useBrand()
+  const { replaceBrand, setCurrentUser } = useBrand()
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -25,7 +25,7 @@ export default function Login({ onLogin }) {
       return
     }
     // Switch to the brand for this login, set the Omni user, then enter.
-    updateBrand(res.brand)
+    replaceBrand(res.brand)
     setCurrentUser(res.user)
     onLogin(res.user)
   }
