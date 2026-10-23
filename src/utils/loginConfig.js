@@ -76,6 +76,10 @@ const EDUCATION_BRAND = {
 // secret profile, so only the non-secret sentinel lives here.
 export const CUSTOM_FLEET_LOGO = 'https://roadtrafficaccidenttrust.org.nz/wp-content/uploads/2025/07/Custom-Fleet-logo-5cmx5cm-002.png'
 
+// Custom Fleet's own homepage hero photo, served from their Contentful CDN
+// (sized/compressed by the CDN's own query params).
+const CUSTOM_FLEET_HERO = 'https://images.ctfassets.net/9g4sdlwetik5/4pC2DgQvInIoTRaMV2OmhB/86e6bb02d40af17c483e904e2136d3da/AU_home_page_hero_v2.jpg?w=2000&q=72'
+
 // The three Omni apps that sit between AI Chat and Hub.
 const FLEET_APP_TABS = [
   { id: 'fleet-cost', label: 'Fleet cost & utilisation', path: '/apps/1c141a04' },
@@ -89,6 +93,7 @@ const FLEET_CONSOLE_BRAND = {
   name: 'Custom Fleet',
   logo: '',
   logoUrl: CUSTOM_FLEET_LOGO,
+  heroImage: CUSTOM_FLEET_HERO,
   primaryColor: '#D6001C',
   secondaryColor: '#1A1A1A',
   description: 'Fleet expertise and technology combined, so organisations across Australia and New Zealand can manage their vehicles with more confidence.',

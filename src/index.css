@@ -1500,3 +1500,12 @@ button.dashboard-avatar:focus-visible { outline: 2px solid #6366f1; outline-offs
   .ovf-trust { grid-template-columns: repeat(2, 1fr); gap: 20px; margin-left: 24px; margin-right: 24px; width: auto; }
   .ovf-values, .ovf-service-grid { grid-template-columns: 1fr; }
 }
+
+/* Hero photograph behind the brand-tinted scrim */
+.ovf-hero-photo {
+  position: absolute; inset: 0;
+  background-size: cover; background-position: center 62%; background-repeat: no-repeat;
+  transform: scale(1.02);
+}
+.ovf-hero-scrim { position: absolute; inset: 0; }
+.ovf-hero-inner { position: relative; z-index: 1; }

@@ -80,7 +80,21 @@ export default function OverviewFleet({ onNavigate }) {
   return (
     <div className="ovf">
       {/* ── Hero ─────────────────────────────────────────────────────── */}
-      <section className="ovf-hero" style={{ background: `linear-gradient(135deg, ${brand.secondaryColor} 0%, ${palette.primaryDark} 55%, ${primary} 140%)` }}>
+      <section
+        className="ovf-hero"
+        style={{ background: `linear-gradient(135deg, ${brand.secondaryColor} 0%, ${palette.primaryDark} 55%, ${primary} 140%)` }}
+      >
+        {brand.heroImage && (
+          <>
+            <div className="ovf-hero-photo" style={{ backgroundImage: `url(${brand.heroImage})` }} />
+            {/* Brand-tinted scrim keeps the copy legible and keeps the
+                per-tenant blue/green theming over the photograph. */}
+            <div
+              className="ovf-hero-scrim"
+              style={{ background: `linear-gradient(100deg, ${brand.secondaryColor}f5 0%, ${brand.secondaryColor}e0 34%, ${palette.primaryDark}99 64%, ${primary}40 100%)` }}
+            />
+          </>
+        )}
         <div className="ovf-hero-inner">
           <div className="ovf-hero-copy">
             <span className="ovf-eyebrow" style={{ background: 'rgba(255,255,255,0.14)', color: '#fff' }}>
