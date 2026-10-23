@@ -90,7 +90,15 @@ export default function Dashboard({ onLogout }) {
     const PUSH_TYPES = new Set(['bubble-play:send-push', 'fishtank:onesignal-send'])
     const str = (v, max = 120) => (typeof v === 'string' ? v.slice(0, max) : '')
 
-    const isTrustedEmbedOrigin = origin => {
+    // Omni runs an app's custom HTML inside a sandboxed frame, which gets an
+    // opaque origin reported as the string "null". We still accept those, but
+    // only when this page is the top-level window (so nobody has framed the
+    // portal) and the message came from a frame below us — an attacker can't
+    // inject a frame into our own document.
+    const isTrustedEmbedOrigin = (origin, source) => {
+      if (origin === 'null' || origin === '') {
+        return window.top === window.self && source !== window.self && source !== window.parent
+      }
       try {
         const host = new URL(origin).hostname.toLowerCase()
         return EMBED_HOST_SUFFIXES.some(sfx => host.endsWith(sfx))
@@ -100,16 +108,20 @@ export default function Dashboard({ onLogout }) {
     const onMessage = async event => {
       const data = event.data
       if (!data || typeof data !== 'object' || !PUSH_TYPES.has(data.type)) return
-      if (!isTrustedEmbedOrigin(event.origin)) {
-        console.warn('Ignoring push request from untrusted origin:', event.origin)
+      if (!isTrustedEmbedOrigin(event.origin, event.source)) {
+        console.warn('[push] rejected: untrusted origin', event.origin)
+        setPushFeedback(`Push blocked: untrusted origin ${event.origin}`)
+        setTimeout(() => setPushFeedback(''), 4000)
         return
       }
+      console.info('[push] request accepted from', event.origin, '→', data.type)
 
       const action = str(data.action) || 'Fleet action'
       const detail = [str(data.rego, 32), str(data.driver, 48), str(data.depot, 48)]
         .filter(Boolean).join(' · ')
 
       let ok = false
+      let why = ''
       try {
         const res = await fetch('/api/onesignal-send-template', {
           method: 'POST',
@@ -117,10 +129,18 @@ export default function Dashboard({ onLogout }) {
           body: JSON.stringify({ sendToAll: true, action, message: detail }),
         })
         ok = res.ok
-        if (!ok) console.error('Push send failed:', res.status, await res.text())
+        if (!ok) {
+          why = await res.text()
+          console.error('[push] send failed:', res.status, why)
+        } else {
+          console.info('[push] sent:', action)
+        }
       } catch (err) {
-        console.error('Push send failed:', err)
+        why = String(err)
+        console.error('[push] send failed:', err)
       }
+      setPushFeedback(ok ? `Push sent · ${action}` : `Push failed · ${why.slice(0, 90)}`)
+      setTimeout(() => setPushFeedback(''), 4000)
 
       // Reply so the app can confirm the hand-off actually landed.
       try {
