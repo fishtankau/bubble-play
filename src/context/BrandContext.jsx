@@ -46,6 +46,10 @@ export const defaultBrand = {
   // Omni rejects the request with: "The provided user attributes do not
   // match the names of existing user attributes."
   embedSendRegionAttribute: true,
+  // Whether to send the user's `userAttributes` on embed SSO at all. Separate
+  // from `embedSendRegionAttribute` so a brand can send its own attributes
+  // (e.g. Custom Fleet's fleet_tenant) without exposing the Flights tab.
+  embedSendUserAttributes: true,
 }
 
 export function BrandProvider({ children }) {

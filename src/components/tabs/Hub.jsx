@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useBrand } from '../../context/BrandContext'
 import { FolderKanban, AlertCircle, Loader2, ExternalLink } from 'lucide-react'
+import { embedUserAttributes } from '../../utils/userAttributes'
 
 // Omni APPLICATION-mode Hub embed. Lands users on the org-wide Hub
 // (`contentPath=/root`) so they see the org's shared content (Templates,
@@ -72,7 +73,7 @@ export default function Hub() {
         externalId: scopedExternalId,
         name: currentUser?.name,
         email: currentUser?.email,
-        userAttributes: brand.embedSendRegionAttribute === false ? undefined : currentUser?.userAttributes,
+        userAttributes: embedUserAttributes(brand, currentUser),
       })
     })
       .then(res => res.json())

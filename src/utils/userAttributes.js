@@ -22,6 +22,19 @@ const USER_MAP = {
   'anika': { region: 'west',  name: 'Anika — West' },
 }
 
+// What to send as `userAttributes` on the embed SSO request.
+//
+// Kept separate from `embedSendRegionAttribute` (which only controls whether the
+// Port-of-Seattle Flights tab is available) so a brand can send its own
+// attributes — e.g. the Custom Fleet `fleet_tenant` — without exposing Flights.
+// Empty objects are returned as undefined so Omni never receives `userAttributes={}`.
+export function embedUserAttributes(brand, user) {
+  if (brand?.embedSendUserAttributes === false) return undefined
+  const attrs = user?.userAttributes
+  if (!attrs || typeof attrs !== 'object' || Object.keys(attrs).length === 0) return undefined
+  return attrs
+}
+
 export function resolveUser(rawId) {
   const id = (rawId || '').trim().toLowerCase()
   const matched = USER_MAP[id]

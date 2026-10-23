@@ -5,12 +5,15 @@ import AIChat from './tabs/AIChat'
 import SearchTab from './tabs/Search'
 import Flights from './tabs/Flights'
 import Hub from './tabs/Hub'
-import { Sun, Moon, LogOut, LayoutDashboard, MessageCircle, MonitorDot, Plane, Sparkles, FolderKanban, Bell, PanelsTopLeft } from 'lucide-react'
+import { Sun, Moon, LogOut, LayoutDashboard, MessageCircle, MonitorDot, Plane, Sparkles, FolderKanban, Bell, PanelsTopLeft, Gauge, ShieldCheck, GraduationCap } from 'lucide-react'
 import { getContrastColor } from '../utils/colors'
 import { initializeOneSignal, isOneSignalConfigured } from '../utils/oneSignal'
 import AppTab from './tabs/App'
+import OmniEmbed from './OmniEmbed'
 
-const tabs = [
+const APP_TAB_ICONS = [Gauge, ShieldCheck, GraduationCap]
+
+const BASE_TABS = [
   { id: 'overview', label: 'Overview', icon: LayoutDashboard },
   { id: 'aichat', label: 'AI Chat', icon: MessageCircle },
   { id: 'search', label: 'Dashboard', icon: MonitorDot },
@@ -40,14 +43,33 @@ export default function Dashboard({ onLogout }) {
   // attribute is turned off — without it, the access filter and filter panel
   // queries fail.
   const flightsHidden = brand.embedSendRegionAttribute === false
-  const visibleTabs = flightsHidden ? tabs.filter(t => t.id !== 'flights') : tabs
-  const configuredTabs = visibleTabs.filter(t => t.id !== 'apps' || Boolean(brand.embedAppPath))
+
+  // Brand-supplied Omni app tabs (e.g. Custom Fleet's three) sit between
+  // AI Chat and Hub. Each renders a signed embed of its own contentPath.
+  const brandAppTabs = Array.isArray(brand.appTabs) ? brand.appTabs : []
+  const extraTabs = brandAppTabs.map((t, i) => ({
+    id: `app:${t.id}`,
+    label: t.label,
+    icon: APP_TAB_ICONS[i % APP_TAB_ICONS.length],
+    appTab: t,
+  }))
+  const withExtras = BASE_TABS.flatMap(t => (t.id === 'aichat' ? [t, ...extraTabs] : [t]))
+
+  const configuredTabs = withExtras.filter(t => {
+    if (t.id === 'flights' && flightsHidden) return false
+    if (t.id === 'apps' && !brand.embedAppPath) return false
+    // A brand with its own app tabs replaces the generic Dashboard tab.
+    if (t.id === 'search' && brand.showDashboardTab === false) return false
+    return true
+  })
 
   // If user is currently on Flights but it just got hidden, bounce back to Overview.
+  const availableIds = configuredTabs.map(t => t.id).join(',')
   useEffect(() => {
-    if (activeTab === 'flights' && flightsHidden) setActiveTab('overview')
-  }, [activeTab, flightsHidden])
+    if (!availableIds.split(',').includes(activeTab)) setActiveTab('overview')
+  }, [availableIds, activeTab])
 
+  const activeAppTab = configuredTabs.find(t => t.id === activeTab)?.appTab
   const ActiveComponent = tabComponents[activeTab]
   const activeBtnText = getContrastColor(brand.primaryColor)
 
@@ -173,7 +195,17 @@ export default function Dashboard({ onLogout }) {
 
       <main className="dashboard-main">
         <div className="dashboard-content">
-          <ActiveComponent onNavigate={setActiveTab} darkMode={darkMode} />
+          {activeAppTab ? (
+            <OmniEmbed
+              contentPath={activeAppTab.path}
+              vanityDomain={activeAppTab.vanityDomain || brand.embedVanityDomain}
+              secretProfile={activeAppTab.secretProfile || brand.embedSecretProfile}
+              themeId={activeAppTab.themeId ?? brand.embedThemeId}
+              title={`${brand.name} — ${activeAppTab.label}`}
+            />
+          ) : (
+            ActiveComponent && <ActiveComponent onNavigate={setActiveTab} darkMode={darkMode} />
+          )}
         </div>
       </main>
     </div>

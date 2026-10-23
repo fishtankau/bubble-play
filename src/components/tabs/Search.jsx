@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useBrand } from '../../context/BrandContext'
 import { MonitorDot, AlertCircle, Loader2, ExternalLink } from 'lucide-react'
+import { embedUserAttributes } from '../../utils/userAttributes'
 
 export default function SearchTab() {
   const { brand, currentUser } = useBrand()
@@ -52,7 +53,7 @@ export default function SearchTab() {
         externalId: currentUser?.externalId,
         name: currentUser?.name,
         email: currentUser?.email,
-        userAttributes: brand.embedSendRegionAttribute === false ? undefined : currentUser?.userAttributes,
+        userAttributes: embedUserAttributes(brand, currentUser),
       })
     })
       .then(res => res.json())

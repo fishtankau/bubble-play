@@ -1,16 +1,20 @@
 import { useState } from 'react'
 import { useBrand } from '../context/BrandContext'
-import { resolveLogin } from '../utils/loginConfig'
+import { resolveLogin, isPasswordlessLogin, CUSTOM_FLEET_LOGO } from '../utils/loginConfig'
 
 const NEUTRAL_PRIMARY = '#6366f1'
 const NEUTRAL_SECONDARY = '#1e1b4b'
+// Served through the image proxy so the remote SVG can't be blocked by
+// hotlink/CORS rules from our origin.
+const LOGIN_LOGO = `/api/proxy-image?url=${encodeURIComponent(CUSTOM_FLEET_LOGO)}`
 
 export default function Login({ onLogin }) {
   const { updateBrand, setCurrentUser } = useBrand()
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
-  const passwordlessEducation = username.trim().toLowerCase() === 'education'
+  const [logoFailed, setLogoFailed] = useState(false)
+  const passwordless = isPasswordlessLogin(username)
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -42,9 +46,18 @@ export default function Login({ onLogin }) {
 
       <form className="login-card" onSubmit={handleSubmit}>
         <div className="login-brand">
-          <div className="login-brand-text">
-            <span className="login-brand-name">Login</span>
-          </div>
+          {logoFailed ? (
+            <div className="login-brand-text">
+              <span className="login-brand-name">Login</span>
+            </div>
+          ) : (
+            <img
+              src={LOGIN_LOGO}
+              alt="Custom Fleet"
+              className="login-logo-img"
+              onError={() => setLogoFailed(true)}
+            />
+          )}
         </div>
 
         <div className="login-field">
@@ -55,14 +68,14 @@ export default function Login({ onLogin }) {
             onChange={e => {
               const nextUsername = e.target.value
               setUsername(nextUsername)
-              if (nextUsername.trim().toLowerCase() === 'education') setPassword('')
+              if (isPasswordlessLogin(nextUsername)) setPassword('')
               setError('')
             }}
             autoComplete="off"
             autoFocus
           />
         </div>
-        {!passwordlessEducation && (
+        {!passwordless && (
           <div className="login-field">
             <input
               type="password"

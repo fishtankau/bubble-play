@@ -3,6 +3,7 @@ import { useBrand } from '../../context/BrandContext'
 import { Plane, MapPin, Briefcase, AlertCircle, Loader2, ExternalLink, Search, X, Zap, RefreshCw, ChevronDown, ChevronUp, CalendarClock } from 'lucide-react'
 import CarrierFeedbackModal from '../CarrierFeedbackModal'
 import ScheduleDeliveryModal from '../ScheduleDeliveryModal'
+import { embedUserAttributes } from '../../utils/userAttributes'
 
 const AIRPORT_FILTER_ID = 'lG4Gn7nz'
 const CARRIER_FILTER_ID = 'v6fXfL0c'
@@ -388,7 +389,7 @@ export default function Flights({ darkMode = false }) {
         externalId: currentUser?.externalId,
         name: currentUser?.name,
         email: currentUser?.email,
-        userAttributes: brand.embedSendRegionAttribute === false ? undefined : currentUser?.userAttributes,
+        userAttributes: embedUserAttributes(brand, currentUser),
         prefersDark: darkMode,
         filterSearchParam,
       })

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useBrand } from '../context/BrandContext'
 import { AlertCircle, ExternalLink, Loader2, MonitorDot } from 'lucide-react'
+import { embedUserAttributes } from '../utils/userAttributes'
 
 export default function OmniEmbed({ contentPath, vanityDomain, secretProfile, themeId, title }) {
   const { brand, currentUser } = useBrand()
@@ -40,7 +41,7 @@ export default function OmniEmbed({ contentPath, vanityDomain, secretProfile, th
         externalId: currentUser?.externalId,
         name: currentUser?.name,
         email: currentUser?.email,
-        userAttributes: brand.embedSendRegionAttribute === false ? undefined : currentUser?.userAttributes,
+        userAttributes: embedUserAttributes(brand, currentUser),
       }),
     })
       .then(async response => {
