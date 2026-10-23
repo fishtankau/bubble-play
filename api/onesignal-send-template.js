@@ -43,6 +43,10 @@ export default async function handler(req, res) {
     return res.status(503).json({ error: 'OneSignal sending is not configured on the server' });
   }
 
+  const asText = (v, max) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
+  const action = asText(req.body?.action, 120);
+  const message = asText(req.body?.message, 200);
+
   const subscriptionId = req.body?.subscriptionId;
   if (!sendToAll && (typeof subscriptionId !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(subscriptionId))) {
     return res.status(400).json({ error: 'A valid OneSignal subscription ID is required' });
@@ -63,6 +67,10 @@ export default async function handler(req, res) {
           ? { included_segments: [ALL_SUBSCRIPTIONS_SEGMENT] }
           : { include_subscription_ids: [subscriptionId] }),
         template_id: TEMPLATE_ID,
+        // When an embedded app supplies an action, use it as the notification
+        // text — explicit headings/contents override the template's own copy.
+        ...(action ? { headings: { en: action } } : {}),
+        ...(action && message ? { contents: { en: message } } : {}),
       }),
       signal: AbortSignal.timeout(15000),
     });

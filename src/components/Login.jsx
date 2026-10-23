@@ -1,12 +1,12 @@
 import { useState } from 'react'
 import { useBrand } from '../context/BrandContext'
-import { resolveLogin, isPasswordlessLogin, CUSTOM_FLEET_LOGO } from '../utils/loginConfig'
+import { resolveLogin, isPasswordlessLogin, loginLogoFor } from '../utils/loginConfig'
 
 const NEUTRAL_PRIMARY = '#6366f1'
 const NEUTRAL_SECONDARY = '#1e1b4b'
-// Served through the image proxy so the remote SVG can't be blocked by
+// Served through the image proxy so the remote image can't be blocked by
 // hotlink/CORS rules from our origin.
-const LOGIN_LOGO = `/api/proxy-image?url=${encodeURIComponent(CUSTOM_FLEET_LOGO)}`
+const proxied = url => `/api/proxy-image?url=${encodeURIComponent(url)}`
 
 export default function Login({ onLogin }) {
   const { updateBrand, setCurrentUser } = useBrand()
@@ -14,6 +14,7 @@ export default function Login({ onLogin }) {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [logoFailed, setLogoFailed] = useState(false)
+  const loginLogo = loginLogoFor(username)
   const passwordless = isPasswordlessLogin(username)
 
   const handleSubmit = (e) => {
@@ -46,17 +47,17 @@ export default function Login({ onLogin }) {
 
       <form className="login-card" onSubmit={handleSubmit}>
         <div className="login-brand">
-          {logoFailed ? (
-            <div className="login-brand-text">
-              <span className="login-brand-name">Login</span>
-            </div>
-          ) : (
+          {loginLogo && !logoFailed ? (
             <img
-              src={LOGIN_LOGO}
+              src={proxied(loginLogo)}
               alt="Custom Fleet"
               className="login-logo-img"
               onError={() => setLogoFailed(true)}
             />
+          ) : (
+            <div className="login-brand-text">
+              <span className="login-brand-name">Login</span>
+            </div>
           )}
         </div>
 
@@ -69,6 +70,7 @@ export default function Login({ onLogin }) {
               const nextUsername = e.target.value
               setUsername(nextUsername)
               if (isPasswordlessLogin(nextUsername)) setPassword('')
+              setLogoFailed(false)
               setError('')
             }}
             autoComplete="off"

@@ -74,7 +74,7 @@ const EDUCATION_BRAND = {
 // Brand identity from customfleet.com.au; logo straight from Fleet Office.
 // Secrets resolve server-side from FLEET_* env vars via the 'fleet-console'
 // secret profile, so only the non-secret sentinel lives here.
-export const CUSTOM_FLEET_LOGO = 'https://securelogin.customfleet.com/customfleet/resources/image/cpfo/CF_HeaderLogo.svg'
+export const CUSTOM_FLEET_LOGO = 'https://roadtrafficaccidenttrust.org.nz/wp-content/uploads/2025/07/Custom-Fleet-logo-5cmx5cm-002.png'
 
 // The three Omni apps that sit between AI Chat and Hub.
 const FLEET_APP_TABS = [
@@ -97,6 +97,13 @@ const FLEET_CONSOLE_BRAND = {
     'Safer, more efficient, future-ready. Move with greater confidence every day.',
     'Turn data into progress. Predictive insights that surface efficiencies before they cost you.',
     'Sustainability is not an add-on. Electrification and decarbonisation planned into the fleet.',
+  ],
+  // Trust markers taken from customfleet.com.au.
+  stats: [
+    { value: '1,600+', label: 'Customers across A & NZ' },
+    { value: '40+', label: 'Years in fleet' },
+    { value: '55+', label: 'Countries via Element-Arval' },
+    { value: 'A & NZ', label: 'Operating markets' },
   ],
   products: [
     { name: 'Fleet Management', description: 'End-to-end support across accident management, insurance, maintenance and tyres, roadside assistance, registration, fuel cards and tolls.' },
@@ -123,8 +130,20 @@ const FLEET_CONSOLE_BRAND = {
 
 // fleet_tenant drives the Omni access filter for the Custom Fleet apps.
 const FLEET_LOGINS = {
-  aufleet: { tenant: 'AU', name: 'AU Fleet' },
-  nzfleet: { tenant: 'NZ', name: 'NZ Fleet' },
+  aufleet: {
+    tenant: 'AU', name: 'AU Fleet', market: 'Australia',
+    primaryColor: '#2563EB', secondaryColor: '#0B2545',
+  },
+  nzfleet: {
+    tenant: 'NZ', name: 'NZ Fleet', market: 'Aotearoa New Zealand',
+    primaryColor: '#0E9F8E', secondaryColor: '#06332F',
+  },
+}
+
+// The logo is specific to the Custom Fleet logins, so the login screen only
+// shows it once one of those usernames is typed.
+export function loginLogoFor(rawId) {
+  return FLEET_LOGINS[(rawId || '').trim().toLowerCase()] ? CUSTOM_FLEET_LOGO : null
 }
 
 // Logins that take no password (the field hides itself in the UI).
@@ -142,7 +161,13 @@ export function resolveLogin(rawId, password) {
   if (fleet) {
     return {
       ok: true,
-      brand: { ...FLEET_CONSOLE_BRAND },
+      brand: {
+        ...FLEET_CONSOLE_BRAND,
+        // AU gets the blue interface, NZ the green one.
+        primaryColor: fleet.primaryColor,
+        secondaryColor: fleet.secondaryColor,
+        description: `Fleet expertise and technology combined, so organisations across ${fleet.market} can manage their vehicles with more confidence.`,
+      },
       user: {
         ...resolveUser(id),
         name: fleet.name,

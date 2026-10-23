@@ -21,6 +21,12 @@ export default function Overview({ onNavigate }) {
   const educationMode = brand.name === 'Education'
 
   const hasProducts = brand.products?.length > 0
+  // A brand that ships its own Omni app tabs (Custom Fleet) gets fleet-specific
+  // copy, and "View Dashboards" opens its first app tab instead of the generic
+  // Dashboard tab (which that brand hides).
+  const fleetApps = Array.isArray(brand.appTabs) ? brand.appTabs : []
+  const fleetMode = fleetApps.length > 0
+  const dashboardTarget = fleetMode ? `app:${fleetApps[0].id}` : 'search'
 
   // Three primary portal CTAs that link to other tabs
   const portalCards = [
@@ -28,25 +34,29 @@ export default function Overview({ onNavigate }) {
       id: 'aichat',
       icon: MessageCircle,
       eyebrow: educationMode ? 'Learner support' : 'AI-powered',
-      title: educationMode ? 'Understand Learner Needs' : 'Ask in Plain English',
+      title: fleetMode ? 'Ask in Plain English' : (educationMode ? 'Understand Learner Needs' : 'Ask in Plain English'),
       desc: educationMode ? 'Explore questions about student progress, engagement, and the support learners need.' : 'Get answers from your data by chatting with our AI agents — no SQL, no dashboards required.',
-      cta: 'Open AI Chat',
+      cta: fleetMode ? 'Ask about the fleet' : 'Open AI Chat',
     },
     {
-      id: 'search',
+      id: dashboardTarget,
       icon: MonitorDot,
-      eyebrow: educationMode ? 'Student outcomes' : 'Always on',
-      title: educationMode ? 'Learner Outcomes' : 'Live Dashboards',
-      desc: educationMode ? 'Review enrollment, engagement, and student outcome trends in your education dashboard.' : 'Browse curated metrics across your business with real-time, always-fresh dashboards.',
+      eyebrow: fleetMode ? 'Cost & utilisation' : (educationMode ? 'Student outcomes' : 'Always on'),
+      title: fleetMode ? 'Know What the Fleet Costs' : (educationMode ? 'Learner Outcomes' : 'Live Dashboards'),
+      desc: fleetMode
+        ? 'Track total cost of ownership, leases ending, under-used vehicles, idle fuel and after-hours driving across every depot.'
+        : (educationMode ? 'Review enrollment, engagement, and student outcome trends in your education dashboard.' : 'Browse curated metrics across your business with real-time, always-fresh dashboards.'),
       cta: 'View Dashboards',
     },
     {
       id: 'hub',
       icon: Wand2,
       eyebrow: educationMode ? 'Explore' : 'Self-serve',
-      title: educationMode ? 'Build an Education View' : 'Create Your Own',
-      desc: educationMode ? 'Create and share focused views to help teams act on the information that matters to learners.' : 'Spin up your own explorations and save them to your team hub — share with your org in a click.',
-      cta: 'Open Hub',
+      title: fleetMode ? 'Your Team\'s Saved Views' : (educationMode ? 'Build an Education View' : 'Create Your Own'),
+      desc: fleetMode
+        ? 'Open the three fleet apps, build your own explorations and save them to the Custom Fleet hub to share with your team.'
+        : (educationMode ? 'Create and share focused views to help teams act on the information that matters to learners.' : 'Spin up your own explorations and save them to your team hub — share with your org in a click.'),
+      cta: fleetMode ? 'Open the Hub' : 'Open Hub',
     },
   ]
 
@@ -184,22 +194,17 @@ export default function Overview({ onNavigate }) {
       {/* Stats / Highlights Bar */}
       <div className="homepage-stats" style={{ background: `linear-gradient(135deg, ${brand.primaryColor}, ${palette.primaryDark})` }}>
         <div className="stats-grid">
-          <div className="stat-item">
-            <span className="stat-number" style={{ color: '#fff' }}>{educationMode ? '01' : '500+'}</span>
-            <span className="stat-label">{educationMode ? 'Student Success' : 'Team Members'}</span>
-          </div>
-          <div className="stat-item">
-            <span className="stat-number" style={{ color: '#fff' }}>{educationMode ? '02' : '50M+'}</span>
-            <span className="stat-label">{educationMode ? 'Enrollment' : 'Customers Served'}</span>
-          </div>
-          <div className="stat-item">
-            <span className="stat-number" style={{ color: '#fff' }}>{educationMode ? '03' : '25+'}</span>
-            <span className="stat-label">{educationMode ? 'Engagement' : 'Countries'}</span>
-          </div>
-          <div className="stat-item">
-            <span className="stat-number" style={{ color: '#fff' }}>{educationMode ? '04' : '99.9%'}</span>
-            <span className="stat-label">{educationMode ? 'Learning Resources' : 'Uptime'}</span>
-          </div>
+          {(brand.stats?.length ? brand.stats : [
+            { value: educationMode ? '01' : '500+', label: educationMode ? 'Student Success' : 'Team Members' },
+            { value: educationMode ? '02' : '50M+', label: educationMode ? 'Enrollment' : 'Customers Served' },
+            { value: educationMode ? '03' : '25+', label: educationMode ? 'Engagement' : 'Countries' },
+            { value: educationMode ? '04' : '99.9%', label: educationMode ? 'Learning Resources' : 'Uptime' },
+          ]).map((stat, i) => (
+            <div className="stat-item" key={i}>
+              <span className="stat-number" style={{ color: '#fff' }}>{stat.value}</span>
+              <span className="stat-label">{stat.label}</span>
+            </div>
+          ))}
         </div>
       </div>
 

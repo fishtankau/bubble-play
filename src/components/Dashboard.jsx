@@ -5,7 +5,7 @@ import AIChat from './tabs/AIChat'
 import SearchTab from './tabs/Search'
 import Flights from './tabs/Flights'
 import Hub from './tabs/Hub'
-import { Sun, Moon, LogOut, LayoutDashboard, MessageCircle, MonitorDot, Plane, Sparkles, FolderKanban, Bell, PanelsTopLeft, Gauge, ShieldCheck, GraduationCap } from 'lucide-react'
+import { LogOut, LayoutDashboard, MessageCircle, MonitorDot, Plane, Sparkles, FolderKanban, Bell, PanelsTopLeft, Gauge, ShieldCheck, GraduationCap } from 'lucide-react'
 import { getContrastColor } from '../utils/colors'
 import { initializeOneSignal, isOneSignalConfigured } from '../utils/oneSignal'
 import AppTab from './tabs/App'
@@ -33,7 +33,8 @@ const tabComponents = {
 
 export default function Dashboard({ onLogout }) {
   const [activeTab, setActiveTab] = useState('overview')
-  const [darkMode, setDarkMode] = useState(false)
+  // Dark mode toggle removed from the header; embeds still receive the flag.
+  const [darkMode] = useState(false)
   const [pushSending, setPushSending] = useState(false)
   const [pushFeedback, setPushFeedback] = useState('')
   const { brand, currentUser } = useBrand()
@@ -76,6 +77,62 @@ export default function Dashboard({ onLogout }) {
   useEffect(() => {
     if (!isOneSignalConfigured()) return
     initializeOneSignal().catch(error => console.error('OneSignal initialization failed:', error))
+  }, [])
+
+
+  // ── Push bridge ────────────────────────────────────────────────────────
+  // Embedded Omni apps can't call OneSignal themselves, so they postMessage to
+  // the parent portal and we send the push. Messages arrive from the Omni embed
+  // origin and are DATA, not instructions: we only read a few strings from them
+  // and use them as notification text.
+  useEffect(() => {
+    const EMBED_HOST_SUFFIXES = ['.embed-omniapp.co', '.omniapp.co', '.exploreomni.dev']
+    const PUSH_TYPES = new Set(['bubble-play:send-push', 'fishtank:onesignal-send'])
+    const str = (v, max = 120) => (typeof v === 'string' ? v.slice(0, max) : '')
+
+    const isTrustedEmbedOrigin = origin => {
+      try {
+        const host = new URL(origin).hostname.toLowerCase()
+        return EMBED_HOST_SUFFIXES.some(sfx => host.endsWith(sfx))
+      } catch { return false }
+    }
+
+    const onMessage = async event => {
+      const data = event.data
+      if (!data || typeof data !== 'object' || !PUSH_TYPES.has(data.type)) return
+      if (!isTrustedEmbedOrigin(event.origin)) {
+        console.warn('Ignoring push request from untrusted origin:', event.origin)
+        return
+      }
+
+      const action = str(data.action) || 'Fleet action'
+      const detail = [str(data.rego, 32), str(data.driver, 48), str(data.depot, 48)]
+        .filter(Boolean).join(' · ')
+
+      let ok = false
+      try {
+        const res = await fetch('/api/onesignal-send-template', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ sendToAll: true, action, message: detail }),
+        })
+        ok = res.ok
+        if (!ok) console.error('Push send failed:', res.status, await res.text())
+      } catch (err) {
+        console.error('Push send failed:', err)
+      }
+
+      // Reply so the app can confirm the hand-off actually landed.
+      try {
+        event.source?.postMessage(
+          { type: `${data.type}:result`, ok, action, appId: str(data.appId, 64) },
+          event.origin,
+        )
+      } catch { /* the frame may already be gone */ }
+    }
+
+    window.addEventListener('message', onMessage)
+    return () => window.removeEventListener('message', onMessage)
   }, [])
 
   const handlePushClick = useCallback(async ({ quiet = false } = {}) => {
@@ -174,13 +231,6 @@ export default function Dashboard({ onLogout }) {
               <Bell size={20} />
             </button>
           )}
-          <button
-            className="btn-icon"
-            onClick={() => setDarkMode(!darkMode)}
-            title={darkMode ? 'Light mode' : 'Dark mode'}
-          >
-            {darkMode ? <Sun size={20} /> : <Moon size={20} />}
-          </button>
           <button className="btn-icon" onClick={onLogout} title="Logout">
             <LogOut size={20} />
           </button>
