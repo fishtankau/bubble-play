@@ -11,6 +11,7 @@
 //   SEATAC_OMNI_API_KEY / SEATAC_EMBED_SECRET   → trial.omniapp.co (default brand)
 //   EDUCATION_*                                  → Education dashboard/app profiles
 //   FLEET_OMNI_API_KEY / FLEET_EMBED_SECRET      → Custom Fleet ('fleet-console')
+//   BEAMTREE_OMNI_API_KEY / BEAMTREE_EMBED_SECRET → Beamtree ('beamtree')
 const SENTINELS = new Set(['', 'env', '__env__']);
 
 function isSentinel(v) {
@@ -26,6 +27,7 @@ export function resolveApiKey(body = {}) {
   if (body.secretProfile === 'education-dashboard') return process.env.EDUCATION_OMNI_API_KEY || '';
   if (body.secretProfile === 'education-app') return process.env.EDUCATION_APP_OMNI_API_KEY || '';
   if (body.secretProfile === 'fleet-console') return process.env.FLEET_OMNI_API_KEY || '';
+  if (body.secretProfile === 'beamtree') return process.env.BEAMTREE_OMNI_API_KEY || '';
   const host = hostOf(body.vanityDomain);
   if (host.includes('trial.omniapp.co')) return process.env.SEATAC_OMNI_API_KEY || '';
   if (host.includes('exploreomni')) return process.env.OMNI_API_KEY || '';
@@ -37,6 +39,7 @@ export function resolveEmbedSecret(body = {}) {
   if (body.secretProfile === 'education-dashboard') return process.env.EDUCATION_EMBED_SECRET || '';
   if (body.secretProfile === 'education-app') return process.env.EDUCATION_APP_EMBED_SECRET || '';
   if (body.secretProfile === 'fleet-console') return process.env.FLEET_EMBED_SECRET || '';
+  if (body.secretProfile === 'beamtree') return process.env.BEAMTREE_EMBED_SECRET || '';
   const host = hostOf(body.vanityDomain);
   if (host.includes('trial.omniapp.co')) return process.env.SEATAC_EMBED_SECRET || '';
   if (host.includes('exploreomni')) return process.env.OMNI_EMBED_SECRET || '';

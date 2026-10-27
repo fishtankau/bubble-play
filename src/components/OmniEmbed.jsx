@@ -38,6 +38,13 @@ export default function OmniEmbed({ contentPath, vanityDomain, secretProfile, th
         customThemeId: themeId || undefined,
         customTheme: themeId ? undefined : customTheme,
         linkAccess: '__omni_link_access_open',
+        // Strictly opt-in: only brands/users that define these send them, so
+        // existing app embeds (Custom Fleet, Education) are unchanged.
+        connectionRoles: brand.embedConnectionRoles ? JSON.stringify(brand.embedConnectionRoles) : undefined,
+        mode: currentUser?.embedMode || undefined,
+        ...(currentUser?.entityFolderRole
+          ? { entity: brand.embedEntityKey, entityFolderContentRole: currentUser.entityFolderRole }
+          : {}),
         externalId: currentUser?.externalId,
         name: currentUser?.name,
         email: currentUser?.email,
@@ -54,7 +61,7 @@ export default function OmniEmbed({ contentPath, vanityDomain, secretProfile, th
       .finally(() => { if (!cancelled) setLoading(false) })
 
     return () => { cancelled = true }
-  }, [brand.embedSendRegionAttribute, brand.primaryColor, brand.secondaryColor, contentPath, currentUser?.email, currentUser?.externalId, currentUser?.name, secretProfile, themeId, vanityDomain])
+  }, [brand.embedSendRegionAttribute, brand.embedConnectionRoles, brand.embedEntityKey, brand.primaryColor, brand.secondaryColor, contentPath, currentUser?.email, currentUser?.externalId, currentUser?.name, currentUser?.embedMode, currentUser?.entityFolderRole, secretProfile, themeId, vanityDomain])
 
   if (loading) {
     return <div className="embed-placeholder"><Loader2 size={32} className="spin" style={{ color: brand.primaryColor }} /><p>Generating signed Omni URL...</p></div>

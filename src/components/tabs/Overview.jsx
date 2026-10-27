@@ -1,5 +1,5 @@
 import { useBrand } from '../../context/BrandContext'
-import OverviewFleet from './OverviewFleet'
+import OverviewVisual from './OverviewVisual'
 import { generatePalette, getContrastColor } from '../../utils/colors'
 import {
   ExternalLink, ArrowRight, Sparkles, Star, Zap,
@@ -21,10 +21,10 @@ export default function Overview({ onNavigate }) {
   const heroBtnText = getContrastColor(brand.primaryColor)
   const educationMode = brand.name === 'Education'
 
-  // Custom Fleet (AUfleet / NZfleet) gets its own visual landing page. Every
-  // other login keeps the original Overview below, untouched.
-  if (Array.isArray(brand.appTabs) && brand.appTabs.length > 0) {
-    return <OverviewFleet onNavigate={onNavigate} />
+  // Brands that supply `overview` copy (Custom Fleet, Beamtree) get the visual
+  // landing page. Every other login keeps the original Overview below.
+  if (brand.overview) {
+    return <OverviewVisual onNavigate={onNavigate} />
   }
 
   const hasProducts = brand.products?.length > 0

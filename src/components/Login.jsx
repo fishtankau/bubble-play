@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useBrand } from '../context/BrandContext'
-import { resolveLogin, isPasswordlessLogin, loginLogoFor } from '../utils/loginConfig'
+import { resolveLogin, isPasswordlessLogin, loginBrandFor } from '../utils/loginConfig'
 
 const NEUTRAL_PRIMARY = '#6366f1'
 const NEUTRAL_SECONDARY = '#1e1b4b'
@@ -14,7 +14,8 @@ export default function Login({ onLogin }) {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [logoFailed, setLogoFailed] = useState(false)
-  const loginLogo = loginLogoFor(username)
+  const loginBrand = loginBrandFor(username)
+  const loginLogo = loginBrand?.logo
   const passwordless = isPasswordlessLogin(username)
 
   const handleSubmit = (e) => {
@@ -50,7 +51,7 @@ export default function Login({ onLogin }) {
           {loginLogo && !logoFailed ? (
             <img
               src={proxied(loginLogo)}
-              alt="Custom Fleet"
+              alt={loginBrand?.name || "Logo"}
               className="login-logo-img"
               onError={() => setLogoFailed(true)}
             />

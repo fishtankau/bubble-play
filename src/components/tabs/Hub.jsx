@@ -64,8 +64,10 @@ export default function Hub({ onNavigate }) {
         linkAccess: '__omni_link_access_open',
         mode: 'APPLICATION',
         entity: brand.embedEntityKey,
-        entityFolderContentRole: ['MANAGER', 'EDITOR', 'VIEWER', 'NO_ACCESS'].includes(brand.embedEntityFolderRole)
-          ? brand.embedEntityFolderRole
+        // A login can carry its own folder role (e.g. Beamtree's analyst is
+        // MANAGER, executive/clinician EDITOR); otherwise the brand default.
+        entityFolderContentRole: ['MANAGER', 'EDITOR', 'VIEWER', 'NO_ACCESS'].includes(currentUser?.entityFolderRole || brand.embedEntityFolderRole)
+          ? (currentUser?.entityFolderRole || brand.embedEntityFolderRole)
           : 'MANAGER',
         groups: groupValue,
         theme: 'blank',
@@ -91,6 +93,7 @@ export default function Hub({ onNavigate }) {
     brand.embedHubGroups,
     brand.embedSendRegionAttribute,
     currentUser?.externalId,
+    currentUser?.entityFolderRole,
   ])
 
   if (!brand.embedSecret) {
