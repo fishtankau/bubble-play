@@ -126,7 +126,21 @@ export default function OverviewVisual({ onNavigate }) {
             <div className="ovf-hero-art">
               {heroLinks.map((link, i) => {
                 const Icon = icon(link.icon)
-                return (
+                const content = (
+                  <>
+                    <span className="ovf-hero-chip-icon" style={{ background: `${primary}22`, color: '#fff' }}>
+                      <Icon size={18} />
+                    </span>
+                    <span className="ovf-hero-chip-label">{link.label}</span>
+                    {!cfg.heroLinksStatic && <ArrowUpRight size={15} className="ovf-hero-chip-arrow" />}
+                  </>
+                )
+                // Static chips are display-only (no navigation, no hover affordance).
+                return cfg.heroLinksStatic ? (
+                  <div key={`${link.label}-${i}`} className="ovf-hero-chip is-static" style={{ animationDelay: `${i * 0.08}s` }}>
+                    {content}
+                  </div>
+                ) : (
                   <button
                     key={`${link.label}-${i}`}
                     type="button"
@@ -134,11 +148,7 @@ export default function OverviewVisual({ onNavigate }) {
                     onClick={() => go(link.target || primaryTarget)}
                     style={{ animationDelay: `${i * 0.08}s` }}
                   >
-                    <span className="ovf-hero-chip-icon" style={{ background: `${primary}22`, color: '#fff' }}>
-                      <Icon size={18} />
-                    </span>
-                    <span className="ovf-hero-chip-label">{link.label}</span>
-                    <ArrowUpRight size={15} className="ovf-hero-chip-arrow" />
+                    {content}
                   </button>
                 )
               })}

@@ -227,10 +227,11 @@ const BEAMTREE_BRAND = {
     eyebrow: 'Beamtree · Clinical Informatics',
     primaryCta: 'Open Hospital Performance',
     chatCta: 'Ask about hospital performance',
+    heroLinksStatic: true,
     heroLinks: [
-      { label: 'Observe — how is my hospital tracking?', icon: 'eye', target: 'app:hospital-performance' },
-      { label: 'Explore — who is affected and where?', icon: 'compass', target: 'app:hospital-performance' },
-      { label: 'Analyse — what is behind the number?', icon: 'microscope', target: 'app:hospital-performance' },
+      { label: 'Observe — how is my hospital tracking?', icon: 'eye' },
+      { label: 'Explore — who is affected and where?', icon: 'compass' },
+      { label: 'Analyse — what is behind the number?', icon: 'microscope' },
     ],
     features: [
       {

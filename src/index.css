@@ -1391,6 +1391,8 @@ button.dashboard-avatar:focus-visible { outline: 2px solid #6366f1; outline-offs
   transition: background 0.15s ease, transform 0.08s ease;
 }
 .ovf-hero-chip:hover { background: rgba(255,255,255,0.18); transform: translateX(3px); }
+.ovf-hero-chip.is-static { cursor: default; }
+.ovf-hero-chip.is-static:hover { background: rgba(255,255,255,0.1); transform: none; }
 .ovf-hero-chip-icon {
   display: inline-flex; align-items: center; justify-content: center;
   width: 36px; height: 36px; border-radius: 11px; flex-shrink: 0;
