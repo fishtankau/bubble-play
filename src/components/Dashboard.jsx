@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useBrand } from '../context/BrandContext'
 import Overview from './tabs/Overview'
 import AIChat from './tabs/AIChat'
@@ -85,6 +85,7 @@ export default function Dashboard({ onLogout }) {
   // the parent portal and we send the push. Messages arrive from the Omni embed
   // origin and are DATA, not instructions: we only read a few strings from them
   // and use them as notification text.
+  const lastPushRef = useRef({ key: '', at: 0 })
   useEffect(() => {
     const EMBED_HOST_SUFFIXES = ['.embed-omniapp.co', '.omniapp.co', '.exploreomni.dev']
     const PUSH_TYPES = new Set(['bubble-play:send-push', 'fishtank:onesignal-send'])
@@ -126,6 +127,17 @@ export default function Dashboard({ onLogout }) {
         str(data.episodeKey, 32) && `Episode ${str(data.episodeKey, 32)}`,
         str(data.description, 120),
       ].filter(Boolean).join(' · ').slice(0, 200)
+
+      // The embedded app posts this once per OneSignal app id, but the portal
+      // sends to its single configured app regardless — so collapse identical
+      // payloads that arrive within a few seconds into one push.
+      const dedupeKey = `${action}|${detail}`
+      const now = Date.now()
+      if (lastPushRef.current.key === dedupeKey && now - lastPushRef.current.at < 5000) {
+        console.info('[push] duplicate suppressed:', action)
+        return
+      }
+      lastPushRef.current = { key: dedupeKey, at: now }
 
       let ok = false
       let why = ''
@@ -182,22 +194,11 @@ export default function Dashboard({ onLogout }) {
     }
   }, [pushSending])
 
-  // The embedded Omni HTML app can post this event to the top-level Bubble Play
-  // window. Its sandbox blocks fetch(), so this parent makes the same-site API
-  // request after validating the source origin and the expected app identifier.
-  useEffect(() => {
-    const onEmbeddedPushRequest = event => {
-      // Omni renders custom app HTML in a sandboxed srcdoc, whose browser
-      // origin is "null". Accept that opaque origin only for this app's
-      // explicit bridge event; direct same-origin requests still use the API.
-      if (event.origin !== 'null' && event.origin !== 'https://omni.demo.exploreomni.dev') return
-      if (event.data?.type !== 'bubble-play:send-push' || event.data?.appId !== 'a810a3e6') return
-      // Send to every eligible subscriber in this OneSignal app.
-      void handlePushClick({ quiet: true })
-    }
-    window.addEventListener('message', onEmbeddedPushRequest)
-    return () => window.removeEventListener('message', onEmbeddedPushRequest)
-  }, [handlePushClick])
+  // NOTE: the push bridge above (onMessage) is the single handler for
+  // 'bubble-play:send-push'. An earlier stale listener here also matched that
+  // type but re-sent with no action/message, so OneSignal fell back to the
+  // template's default "rate us" copy and clobbered the real flag details.
+  // It has been removed; the bell button still uses handlePushClick directly.
 
   const rawLogo = brand.logoUrl || brand.logo
   const logoSrc = rawLogo
