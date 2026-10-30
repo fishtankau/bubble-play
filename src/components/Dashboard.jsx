@@ -117,8 +117,15 @@ export default function Dashboard({ onLogout }) {
       console.info('[push] request accepted from', event.origin, '→', data.type)
 
       const action = str(data.action) || 'Fleet action'
-      const detail = [str(data.rego, 32), str(data.driver, 48), str(data.depot, 48)]
-        .filter(Boolean).join(' · ')
+      // An explicit message wins; otherwise build one from whichever app's
+      // fields are present (Custom Fleet: rego/driver/depot; Beamtree:
+      // flag title, hospital, indicator, episode, description).
+      const detail = str(data.message, 200) || [
+        str(data.rego, 32), str(data.driver, 48), str(data.depot, 48),
+        str(data.title, 80), str(data.hospitalName, 48), str(data.indicator, 60),
+        str(data.episodeKey, 32) && `Episode ${str(data.episodeKey, 32)}`,
+        str(data.description, 120),
+      ].filter(Boolean).join(' · ').slice(0, 200)
 
       let ok = false
       let why = ''
