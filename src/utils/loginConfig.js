@@ -309,13 +309,17 @@ const BEAMTREE_LOGINS = {
 
 // ── CommBank (CBA) ─────────────────────────────────────────────────────
 // Brand identity, copy and imagery from commbank.com.au/home-loans/offers.html.
-// No Omni credentials were supplied for CBA, so its embeds use the default
-// SEATAC instance until a dedicated profile is added.
+// Secrets resolve server-side from CBA_* env vars via the 'cba' secret profile.
 export const CBA_LOGO = 'https://www.commbank.com.au/content/dam/commbank/commBank-logo.svg'
 const CBA_HERO = 'https://assets.commbank.com.au/is/image/commbank/CNCB0594?wid=2000'
 // "Demo Connection" and its "Demo Connection 2" shared model on trial.omniapp.co.
 const CBA_CONNECTION_ID = '821764ab-1015-4ce7-bde8-65c518127b99'
 const CBA_CHAT_MODEL_ID = '199c89f0-59c0-4406-9006-4b813fbd02a1'
+
+// The broker app ("CommBroker · Today") replaces the generic Dashboard tab.
+const CBA_APP_TABS = [
+  { id: 'broker-book', label: 'CBA Broker Book', path: '/apps/ff500766' },
+]
 
 const CBA_BRAND = {
   ...defaultBrand,
@@ -352,7 +356,7 @@ const CBA_BRAND = {
   ],
   overview: {
     eyebrow: 'CommBank · Home loans',
-    primaryCta: 'View Dashboards',
+    primaryCta: 'Open CBA Broker Book',
     chatCta: 'Ask about your offers',
     heroLinksStatic: true,
     heroLinks: [
@@ -369,7 +373,7 @@ const CBA_BRAND = {
         points: ['100,000 Yello points on an eligible home loan', 'At least 0.10% p.a. off eligible variable rates', '$699 conveyancing with Home-in'],
         metric: '100,000',
         caption: 'Yello points when you apply online and settle',
-        linkLabel: 'View the dashboards',
+        linkLabel: 'Open CBA Broker Book',
       },
       {
         icon: 'gift',
@@ -398,12 +402,23 @@ const CBA_BRAND = {
     servicesEyebrow: 'Benefits and offers',
     servicesSub: 'Offers and discounts for CommBank home loan customers. Eligibility criteria and T&Cs apply.',
     ctaTitle: 'Ready to make the most of your home loan?',
-    ctaSub: 'Explore the dashboards, or ask a question in plain English.',
+    ctaSub: 'Open the CBA Broker Book, or ask a question in plain English.',
   },
   // AI Chat is scoped to the "Demo Connection 2" shared model (topics: Home
   // Loan Applications, Rate Decrease Requests). VIEWER on the connection keeps
   // its other models out of the topic picker; the model role lifts this one
   // to querying.
+  omniApiKey: 'env',
+  embedSecret: 'env',
+  embedSecretProfile: 'cba',
+  embedVanityDomain: 'trial.omniapp.co',
+  embedDashboardPath: CBA_APP_TABS[0].path,
+  embedThemeId: '',
+  showDashboardTab: false,
+  appTabs: CBA_APP_TABS,
+  // The broker app queries the Demo Connection 2 model, so its embed user is
+  // a connection QUERIER.
+  embedConnectionRoles: { [CBA_CONNECTION_ID]: 'QUERIER' },
   aiConnectionId: CBA_CONNECTION_ID,
   aiConnectionRole: 'VIEWER',
   aiModelRoles: { [CBA_CHAT_MODEL_ID]: 'RESTRICTED_QUERIER' },
