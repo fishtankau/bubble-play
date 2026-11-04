@@ -5,7 +5,7 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   try {
-    const { contentPath, vanityDomain, customTheme, customThemeId, prefersDark, theme, connectionRoles, mode, linkAccess, filterSearchParam, externalId, name, email, userAttributes, entity, entityFolderContentRole, groups } = req.body;
+    const { contentPath, vanityDomain, customTheme, customThemeId, prefersDark, theme, connectionRoles, modelRoles, mode, linkAccess, filterSearchParam, externalId, name, email, userAttributes, entity, entityFolderContentRole, groups } = req.body;
     const secret = resolveEmbedSecret(req.body);
     if (!secret || !contentPath) {
       return res.status(400).json({ error: 'contentPath is required (or server embed secret not configured)' });
@@ -37,6 +37,8 @@ export default async function handler(req, res) {
     if (theme) payload.theme = theme;
     if (prefersDark) payload.prefersDark = prefersDark;
     if (connectionRoles) payload.connectionRoles = typeof connectionRoles === 'string' ? connectionRoles : JSON.stringify(connectionRoles);
+    // Per-model access (e.g. one shared model on a connection), same encoding as connectionRoles.
+    if (modelRoles) payload.modelRoles = typeof modelRoles === 'string' ? modelRoles : JSON.stringify(modelRoles);
     if (mode) payload.mode = mode;
     if (linkAccess) payload.linkAccess = linkAccess;
     if (filterSearchParam) payload.filterSearchParam = filterSearchParam;

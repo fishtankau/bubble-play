@@ -313,6 +313,9 @@ const BEAMTREE_LOGINS = {
 // SEATAC instance until a dedicated profile is added.
 export const CBA_LOGO = 'https://www.commbank.com.au/content/dam/commbank/commBank-logo.svg'
 const CBA_HERO = 'https://assets.commbank.com.au/is/image/commbank/CNCB0594?wid=2000'
+// "Demo Connection" and its "Demo Connection 2" shared model on trial.omniapp.co.
+const CBA_CONNECTION_ID = '821764ab-1015-4ce7-bde8-65c518127b99'
+const CBA_CHAT_MODEL_ID = '199c89f0-59c0-4406-9006-4b813fbd02a1'
 
 const CBA_BRAND = {
   ...defaultBrand,
@@ -397,6 +400,14 @@ const CBA_BRAND = {
     ctaTitle: 'Ready to make the most of your home loan?',
     ctaSub: 'Explore the dashboards, or ask a question in plain English.',
   },
+  // AI Chat is scoped to the "Demo Connection 2" shared model (topics: Home
+  // Loan Applications, Rate Decrease Requests). VIEWER on the connection keeps
+  // its other models out of the topic picker; the model role lifts this one
+  // to querying.
+  aiConnectionId: CBA_CONNECTION_ID,
+  aiConnectionRole: 'VIEWER',
+  aiModelRoles: { [CBA_CHAT_MODEL_ID]: 'RESTRICTED_QUERIER' },
+  allConnections: [],
   // No airport_region (hides Flights) and no user attributes for this brand.
   embedSendRegionAttribute: false,
   embedSendUserAttributes: false,

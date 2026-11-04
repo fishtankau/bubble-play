@@ -38,6 +38,8 @@ export default function AIChat() {
         contentPath: '/chat',
         vanityDomain: brand.embedVanityDomain || '',
         connectionRoles,
+        // Optional per-model grants, e.g. to scope chat to one shared model.
+        modelRoles: brand.aiModelRoles,
         mode: 'SINGLE_CONTENT',
         externalId: currentUser?.externalId,
         name: currentUser?.name,
@@ -52,7 +54,7 @@ export default function AIChat() {
       })
       .catch(err => setError(err.message))
       .finally(() => setLoading(false))
-  }, [brand.embedSecret, brand.embedVanityDomain, brand.aiConnectionId, brand.aiConnectionRole, brand.embedSendRegionAttribute, currentUser?.externalId])
+  }, [brand.embedSecret, brand.embedVanityDomain, brand.aiConnectionId, brand.aiConnectionRole, brand.aiModelRoles, brand.embedSendRegionAttribute, currentUser?.externalId])
 
   if (loading) {
     return (
