@@ -408,6 +408,10 @@ const CBA_BRAND = {
   aiConnectionRole: 'VIEWER',
   aiModelRoles: { [CBA_CHAT_MODEL_ID]: 'RESTRICTED_QUERIER' },
   allConnections: [],
+  // The Hub signs in as a separate embed user: connection QUERIER, content
+  // MANAGER on the CBA entity folder.
+  hubConnectionRole: 'QUERIER',
+  embedEntityFolderRole: 'MANAGER',
   // No airport_region (hides Flights) and no user attributes for this brand.
   embedSendRegionAttribute: false,
   embedSendUserAttributes: false,

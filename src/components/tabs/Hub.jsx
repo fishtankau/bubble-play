@@ -27,7 +27,9 @@ export default function Hub({ onNavigate }) {
 
     // Build connectionRoles — same strategy as the other tabs
     let connectionRoles = undefined
-    const role = brand.aiConnectionRole || 'RESTRICTED_QUERIER'
+    // hubConnectionRole lets a brand give the Hub user a different role from
+    // AI Chat (CBA scopes chat to one model but the Hub user is a QUERIER).
+    const role = brand.hubConnectionRole || brand.aiConnectionRole || 'RESTRICTED_QUERIER'
     if (brand.aiConnectionId) {
       connectionRoles = JSON.stringify({ [brand.aiConnectionId]: role })
     } else if (brand.allConnections?.length > 0) {
@@ -91,6 +93,9 @@ export default function Hub({ onNavigate }) {
     brand.embedEntityKey,
     brand.embedEntityFolderRole,
     brand.embedHubGroups,
+    brand.hubConnectionRole,
+    brand.aiConnectionId,
+    brand.aiConnectionRole,
     brand.embedSendRegionAttribute,
     currentUser?.externalId,
     currentUser?.entityFolderRole,
