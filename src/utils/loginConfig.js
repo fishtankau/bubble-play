@@ -83,11 +83,9 @@ export const CUSTOM_FLEET_LOGO = 'https://roadtrafficaccidenttrust.org.nz/wp-con
 // (sized/compressed by the CDN's own query params).
 const CUSTOM_FLEET_HERO = 'https://images.ctfassets.net/9g4sdlwetik5/4pC2DgQvInIoTRaMV2OmhB/86e6bb02d40af17c483e904e2136d3da/AU_home_page_hero_v2.jpg?w=2000&q=72'
 
-// The three Omni apps that sit between AI Chat and Hub.
+// The single consolidated Omni app that sits between AI Chat and Hub.
 const FLEET_APP_TABS = [
-  { id: 'fleet-cost', label: 'Fleet cost & utilisation', path: '/apps/1c141a04' },
-  { id: 'driver-safety', label: 'Driver safety & compliance', path: '/apps/5321c938' },
-  { id: 'safety-coaching', label: 'Safety action & coaching centre', path: '/apps/3bc764c4' },
+  { id: 'fleet-portal', label: 'Fleet portal', path: '/apps/8d10cf9f' },
 ]
 
 const FLEET_CONSOLE_BRAND = {
