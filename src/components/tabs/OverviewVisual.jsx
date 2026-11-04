@@ -1,10 +1,11 @@
 import { useBrand } from '../../context/BrandContext'
-import { generatePalette } from '../../utils/colors'
+import { generatePalette, getContrastColor } from '../../utils/colors'
 import {
   ArrowRight, ArrowUpRight, Gauge, ShieldCheck, GraduationCap, MessageCircle,
   FolderKanban, Leaf, Car, Wrench, LineChart, Wallet, CheckCircle2,
   Activity, Stethoscope, HeartPulse, ClipboardCheck, FileBarChart, Microscope,
   BrainCircuit, Eye, Compass, Search, Building2, Users,
+  Home, Gift, BadgePercent, Plane, ShoppingBag, PiggyBank, KeyRound, Smartphone, Calculator, Ticket,
 } from 'lucide-react'
 
 // Brand configs name icons by key so they can stay plain data.
@@ -15,12 +16,14 @@ const ICONS = {
   report: FileBarChart, microscope: Microscope, brain: BrainCircuit, eye: Eye,
   compass: Compass, search: Search, building: Building2, users: Users,
   chat: MessageCircle, folder: FolderKanban,
+  home: Home, gift: Gift, percent: BadgePercent, plane: Plane, bag: ShoppingBag,
+  piggy: PiggyBank, key: KeyRound, phone: Smartphone, calculator: Calculator, ticket: Ticket,
 }
 const icon = (key, fallback = Gauge) => ICONS[key] || fallback
 
 // Visual panel that stands in for photography — a soft, brand-tinted scene
 // with a floating metric card, so each feature section reads as a picture.
-function FeatureVisual({ palette, primary, metric, caption, Icon, flip }) {
+function FeatureVisual({ palette, primary, ink, metric, caption, Icon, flip }) {
   return (
     <div className={`ovf-visual ${flip ? 'ovf-visual-flip' : ''}`}>
       <div
@@ -29,12 +32,12 @@ function FeatureVisual({ palette, primary, metric, caption, Icon, flip }) {
       >
         <div className="ovf-visual-blob" style={{ background: `${primary}1f` }} />
         <div className="ovf-visual-blob ovf-visual-blob-2" style={{ background: `${palette.primaryDark}1a` }} />
-        <div className="ovf-visual-glyph" style={{ color: primary }}>
+        <div className="ovf-visual-glyph" style={{ color: ink }}>
           <Icon size={64} strokeWidth={1.25} />
         </div>
         {metric && (
           <div className="ovf-metric-card">
-            <span className="ovf-metric-value" style={{ color: primary }}>{metric}</span>
+            <span className="ovf-metric-value" style={{ color: ink }}>{metric}</span>
             <span className="ovf-metric-caption">{caption}</span>
           </div>
         )}
@@ -51,6 +54,13 @@ export default function OverviewVisual({ onNavigate }) {
   const cfg = brand.overview || {}
   const palette = generatePalette(brand.primaryColor)
   const primary = brand.primaryColor
+  // Text and icons on white use the ink colour. Light brand colours (e.g.
+  // CommBank yellow) set inkColor so their text stays readable; others
+  // default to the primary colour.
+  const ink = brand.inkColor || primary
+  // Text colour on a primary-coloured background (the closing CTA).
+  const onPrimary = getContrastColor(primary)
+  const lightPrimary = onPrimary !== '#ffffff'
   const apps = Array.isArray(brand.appTabs) ? brand.appTabs : []
   const stats = brand.stats || []
   const products = brand.products || []
@@ -162,7 +172,7 @@ export default function OverviewVisual({ onNavigate }) {
         <section className="ovf-trust">
           {stats.map((s, i) => (
             <div className="ovf-trust-item" key={i}>
-              <span className="ovf-trust-value" style={{ color: primary }}>{s.value}</span>
+              <span className="ovf-trust-value" style={{ color: ink }}>{s.value}</span>
               <span className="ovf-trust-label">{s.label}</span>
             </div>
           ))}
@@ -189,25 +199,26 @@ export default function OverviewVisual({ onNavigate }) {
       {features.map((f, i) => (
         <section className={`ovf-feature ${i % 2 === 1 ? 'ovf-feature-alt' : ''}`} key={`${f.title}-${i}`}>
           <div className="ovf-feature-copy">
-            <span className="ovf-eyebrow" style={{ background: `${primary}14`, color: primary }}>{f.eyebrow}</span>
+            <span className="ovf-eyebrow" style={{ background: `${primary}14`, color: ink }}>{f.eyebrow}</span>
             <h2 className="ovf-feature-title">{f.title}</h2>
             <p className="ovf-feature-body">{f.body}</p>
             {f.points?.length > 0 && (
               <ul className="ovf-points">
                 {f.points.map(pt => (
                   <li key={pt}>
-                    <CheckCircle2 size={17} style={{ color: primary }} /> {pt}
+                    <CheckCircle2 size={17} style={{ color: ink }} /> {pt}
                   </li>
                 ))}
               </ul>
             )}
-            <button type="button" className="ovf-link" style={{ color: primary }} onClick={() => go(f.target)}>
+            <button type="button" className="ovf-link" style={{ color: ink }} onClick={() => go(f.target)}>
               {f.linkLabel} <ArrowRight size={15} />
             </button>
           </div>
           <FeatureVisual
             palette={palette}
             primary={primary}
+            ink={ink}
             metric={f.metric}
             caption={f.caption}
             Icon={icon(f.icon)}
@@ -220,7 +231,7 @@ export default function OverviewVisual({ onNavigate }) {
       {products.length > 0 && (
         <section className="ovf-services">
           <div className="ovf-section-head">
-            <span className="ovf-eyebrow" style={{ background: `${primary}14`, color: primary }}>
+            <span className="ovf-eyebrow" style={{ background: `${primary}14`, color: ink }}>
               {cfg.servicesEyebrow || 'What we do'}
             </span>
             <h2 className="ovf-section-title">Products &amp; Services</h2>
@@ -231,7 +242,7 @@ export default function OverviewVisual({ onNavigate }) {
               const Icon = icon(productIcons[i], ShieldCheck)
               return (
                 <article className="ovf-service" key={p.name}>
-                  <span className="ovf-service-icon" style={{ background: `${primary}14`, color: primary }}>
+                  <span className="ovf-service-icon" style={{ background: `${primary}14`, color: ink }}>
                     <Icon size={20} />
                   </span>
                   <h3 className="ovf-service-title">{p.name}</h3>
@@ -244,14 +255,23 @@ export default function OverviewVisual({ onNavigate }) {
       )}
 
       {/* ── Closing CTA ──────────────────────────────────────────────── */}
-      <section className="ovf-cta" style={{ background: `linear-gradient(135deg, ${primary}, ${palette.primaryDark})` }}>
+      <section
+        className={`ovf-cta ${lightPrimary ? 'ovf-cta-light' : ''}`}
+        style={{
+          // A light primary keeps the panel mostly its own colour so dark text reads.
+          background: lightPrimary
+            ? `linear-gradient(135deg, ${primary} 0%, ${primary} 60%, ${palette.primaryDark} 160%)`
+            : `linear-gradient(135deg, ${primary}, ${palette.primaryDark})`,
+          color: onPrimary,
+        }}
+      >
         <h2 className="ovf-cta-title">{cfg.ctaTitle || 'Ready to dive in?'}</h2>
         {cfg.ctaSub && <p className="ovf-cta-sub">{cfg.ctaSub}</p>}
         <div className="ovf-hero-actions ovf-cta-actions">
           <button
             type="button"
             className="ovf-btn ovf-btn-solid"
-            style={{ background: '#fff', color: brand.secondaryColor }}
+            style={lightPrimary ? { background: brand.secondaryColor, color: '#fff' } : { background: '#fff', color: brand.secondaryColor }}
             onClick={() => go(primaryTarget)}
           >
             {cfg.primaryCta || 'View Dashboards'} <ArrowRight size={16} />

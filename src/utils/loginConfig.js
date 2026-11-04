@@ -307,6 +307,106 @@ const BEAMTREE_LOGINS = {
   },
 }
 
+// ── CommBank (CBA) ─────────────────────────────────────────────────────
+// Brand identity, copy and imagery from commbank.com.au/home-loans/offers.html.
+// No Omni credentials were supplied for CBA, so its embeds use the default
+// SEATAC instance until a dedicated profile is added.
+export const CBA_LOGO = 'https://www.commbank.com.au/content/dam/commbank/commBank-logo.svg'
+const CBA_HERO = 'https://assets.commbank.com.au/is/image/commbank/CNCB0594?wid=2000'
+
+const CBA_BRAND = {
+  ...defaultBrand,
+  configured: true,
+  name: 'CommBank',
+  logo: '',
+  logoUrl: CBA_LOGO,
+  heroImage: `/api/proxy-image?url=${encodeURIComponent(CBA_HERO)}`,
+  primaryColor: '#FFCC00',
+  secondaryColor: '#000000',
+  // Yellow is too light for text on white, so copy and icons use near-black.
+  inkColor: '#1a1a1a',
+  description: 'Take advantage of our current home loan offers that could help with your new, existing or next property.',
+  keyMessages: [
+    'Home loan offers that give you more.',
+    'Earn 100,000 Yello points. Apply online and settle an eligible home loan of $100,000 or more.',
+    'Get at least 0.10% off your rate. On eligible Simple and Standard Variable Rate home loans with a minimum balance of $150,000.',
+    'Settle with $699 conveyancing. Home-in guides you through the process with real-time updates in its app.',
+  ],
+  // Offer figures taken from the home loan offers page.
+  stats: [
+    { value: '100,000', label: 'Yello points on an eligible home loan' },
+    { value: '0.10%', label: 'At least off the advertised rate' },
+    { value: '$699', label: 'Conveyancing with Home-in' },
+    { value: '24,000', label: 'Yello points a year with Amber Electric' },
+  ],
+  products: [
+    { name: 'Home loan offers', description: 'Earn 100,000 CommBank Yello points when you apply online and settle an eligible home loan.' },
+    { name: 'Rate discount', description: 'At least 0.10% p.a. off the advertised rate on eligible Simple and Standard Variable Rate home loans.' },
+    { name: 'Home-in conveyancing', description: '$699 conveyancing, six-hour contract reviews and one of the industry\'s best on-time settlement rates.' },
+    { name: 'More nbn & mobile', description: '$25 off monthly on new More nbn plans for 36 months, and Yello points on new services.' },
+    { name: 'Amber Electric', description: 'Earn up to 24,000 CommBank Yello points per year when you sign up with Amber Electric.' },
+    { name: 'Exclusive access', description: 'Mastercard presale and preferred tickets to shows, plus money-can\'t-buy experiences.' },
+  ],
+  overview: {
+    eyebrow: 'CommBank · Home loans',
+    primaryCta: 'View Dashboards',
+    chatCta: 'Ask about your offers',
+    heroLinksStatic: true,
+    heroLinks: [
+      { label: 'Offers — earn points', icon: 'gift' },
+      { label: 'Banking — earn points', icon: 'home' },
+      { label: 'Perks — for your tier', icon: 'ticket' },
+    ],
+    features: [
+      {
+        icon: 'home',
+        eyebrow: 'Home loan offers',
+        title: 'More from your next property',
+        body: 'Current offers for new, existing or next property — Yello points when you settle, a discount off the advertised rate and $699 conveyancing.',
+        points: ['100,000 Yello points on an eligible home loan', 'At least 0.10% p.a. off eligible variable rates', '$699 conveyancing with Home-in'],
+        metric: '100,000',
+        caption: 'Yello points when you apply online and settle',
+        linkLabel: 'View the dashboards',
+      },
+      {
+        icon: 'gift',
+        eyebrow: 'CommBank Yello',
+        title: 'Rewards for banking with us',
+        body: 'CommBank Yello is our customer recognition program — discounts, points and exclusive access, our way of thanking you for banking with us.',
+        points: ['Earn points on More nbn and mobile plans', 'Up to 24,000 points a year with Amber Electric', 'Presale and preferred tickets with Mastercard'],
+        metric: '24,000',
+        caption: 'Yello points a year with Amber Electric',
+        linkLabel: 'Ask about your points',
+        target: 'aichat',
+      },
+      {
+        icon: 'chat',
+        eyebrow: "We're here to help",
+        title: 'Help when you need it',
+        body: 'Book a Home Loan Specialist, manage your loan online, or get instant help from our virtual assistant and specialists.',
+        points: ['Book an appointment at a time that suits you', 'Redraw or change repayments online', 'Message us for instant help'],
+        metric: '6 hrs',
+        caption: 'Target for Home-in contract reviews',
+        linkLabel: 'Open the Hub',
+        target: 'hub',
+      },
+    ],
+    productIcons: ['home', 'percent', 'key', 'phone', 'leaf', 'ticket'],
+    servicesEyebrow: 'Benefits and offers',
+    servicesSub: 'Offers and discounts for CommBank home loan customers. Eligibility criteria and T&Cs apply.',
+    ctaTitle: 'Ready to make the most of your home loan?',
+    ctaSub: 'Explore the dashboards, or ask a question in plain English.',
+  },
+  // No airport_region (hides Flights) and no user attributes for this brand.
+  embedSendRegionAttribute: false,
+  embedSendUserAttributes: false,
+  embedEntityKey: 'CBA',
+}
+
+const CBA_LOGINS = {
+  cba: { name: 'CommBank Demo User' },
+}
+
 // fleet_tenant drives the Omni access filter for the Custom Fleet apps.
 const FLEET_LOGINS = {
   aufleet: {
@@ -330,11 +430,12 @@ export function loginBrandFor(rawId) {
   const id = (rawId || '').trim().toLowerCase()
   if (FLEET_LOGINS[id]) return { logo: CUSTOM_FLEET_LOGO, name: 'Custom Fleet' }
   if (BEAMTREE_LOGINS[id]) return { logo: BEAMTREE_LOGO, name: 'Beamtree' }
+  if (CBA_LOGINS[id]) return { logo: CBA_LOGO, name: 'CommBank' }
   return null
 }
 
 // Logins that take no password (the field hides itself in the UI).
-const PASSWORDLESS_LOGINS = new Set(['education', ...Object.keys(FLEET_LOGINS), ...Object.keys(BEAMTREE_LOGINS)])
+const PASSWORDLESS_LOGINS = new Set(['education', ...Object.keys(FLEET_LOGINS), ...Object.keys(BEAMTREE_LOGINS), ...Object.keys(CBA_LOGINS)])
 
 export function isPasswordlessLogin(rawId) {
   return PASSWORDLESS_LOGINS.has((rawId || '').trim().toLowerCase())
@@ -366,6 +467,16 @@ export function resolveLogin(rawId, password) {
           hp_landing_page: bt.landing,
         },
       },
+    }
+  }
+
+  // CommBank — no password; visual Overview, default SEATAC embeds.
+  const cba = CBA_LOGINS[id]
+  if (cba) {
+    return {
+      ok: true,
+      brand: CBA_BRAND,
+      user: { ...resolveUser(id), name: cba.name },
     }
   }
 
