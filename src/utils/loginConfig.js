@@ -83,6 +83,10 @@ export const CUSTOM_FLEET_LOGO = 'https://roadtrafficaccidenttrust.org.nz/wp-con
 // (sized/compressed by the CDN's own query params).
 const CUSTOM_FLEET_HERO = 'https://images.ctfassets.net/9g4sdlwetik5/4pC2DgQvInIoTRaMV2OmhB/86e6bb02d40af17c483e904e2136d3da/AU_home_page_hero_v2.jpg?w=2000&q=72'
 
+// The Fleet portal app queries the vehicle_telematics topic and the cf_* write-back
+// tables on the demo-dbt connection.
+const FLEET_CONNECTION_ID = 'aa611249-952f-4a67-a3be-b415a692101b'
+
 // The single consolidated Omni app that sits between AI Chat and Hub.
 const FLEET_APP_TABS = [
   { id: 'fleet-portal', label: 'Fleet portal', path: '/apps/8d10cf9f' },
@@ -160,6 +164,9 @@ const FLEET_CONSOLE_BRAND = {
   omniApiKey: 'env',
   embedSecret: 'env',
   embedSecretProfile: 'fleet-console',
+  // QUERIER so the app's non-topic queries (CF Actions, CF Audit) return rows
+  // and Blobby is available; RESTRICTED_QUERIER can only query topics.
+  embedConnectionRoles: { [FLEET_CONNECTION_ID]: 'QUERIER' },
   embedVanityDomain: 'trial.omniapp.co',
   embedDashboardPath: FLEET_APP_TABS[0].path,
   embedThemeId: '',
@@ -525,6 +532,9 @@ export function resolveLogin(rawId, password) {
       user: {
         ...resolveUser(id),
         name: fleet.name,
+        // The app embeds in APPLICATION mode, with MANAGER on the Custom Fleet folder.
+        embedMode: 'APPLICATION',
+        entityFolderRole: 'MANAGER',
         userAttributes: { fleet_tenant: fleet.tenant },
       },
     }
