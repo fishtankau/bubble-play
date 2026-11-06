@@ -447,11 +447,11 @@ const CBA_LOGINS = {
 // fleet_tenant drives the Omni access filter for the Custom Fleet apps.
 const FLEET_LOGINS = {
   aufleet: {
-    tenant: 'AU', name: 'AU Fleet', market: 'Australia',
+    tenant: 'AU', name: 'AU Fleet', market: 'Australia', mode: 'SINGLE_CONTENT',
     primaryColor: '#2563EB', secondaryColor: '#0B2545',
   },
   nzfleet: {
-    tenant: 'NZ', name: 'NZ Fleet', market: 'Aotearoa New Zealand',
+    tenant: 'NZ', name: 'NZ Fleet', market: 'Aotearoa New Zealand', mode: 'APPLICATION',
     primaryColor: '#0E9F8E', secondaryColor: '#06332F',
   },
 }
@@ -532,8 +532,9 @@ export function resolveLogin(rawId, password) {
       user: {
         ...resolveUser(id),
         name: fleet.name,
-        // The app embeds in APPLICATION mode, with MANAGER on the Custom Fleet folder.
-        embedMode: 'APPLICATION',
+        // Embed mode is per login (AU single content, NZ application), with
+        // MANAGER on the Custom Fleet folder.
+        embedMode: fleet.mode,
         entityFolderRole: 'MANAGER',
         userAttributes: { fleet_tenant: fleet.tenant },
       },
