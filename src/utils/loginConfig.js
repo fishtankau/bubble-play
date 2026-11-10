@@ -513,7 +513,8 @@ export function resolveLogin(rawId, password) {
     return {
       ok: true,
       brand: CBA_BRAND,
-      user: { ...resolveUser(id), name: cba.name },
+      // APPLICATION mode for the broker app, with MANAGER on the CBA folder.
+      user: { ...resolveUser(id), name: cba.name, embedMode: 'APPLICATION', entityFolderRole: 'MANAGER' },
     }
   }
 
