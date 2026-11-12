@@ -6,7 +6,8 @@ const NEUTRAL_PRIMARY = '#6366f1'
 const NEUTRAL_SECONDARY = '#1e1b4b'
 // Served through the image proxy so the remote image can't be blocked by
 // hotlink/CORS rules from our origin.
-const proxied = url => `/api/proxy-image?url=${encodeURIComponent(url)}`
+// Local logos (e.g. /brands/kernel-logo.svg) are served as-is.
+const proxied = url => (url.startsWith('http') ? `/api/proxy-image?url=${encodeURIComponent(url)}` : url)
 
 export default function Login({ onLogin }) {
   const { replaceBrand, setCurrentUser } = useBrand()

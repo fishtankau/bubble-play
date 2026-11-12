@@ -444,6 +444,124 @@ const CBA_LOGINS = {
   cba: { name: 'CommBank Demo User' },
 }
 
+// ── Kernel Fintech ────────────────────────────────────────────────────
+// Brand identity, copy and imagery from kernelwealth.co.nz. Secrets resolve
+// server-side from KERNEL_* env vars via the 'kernel' secret profile.
+// The logo is Kernel's inline SVG wordmark, served from /public.
+export const KERNEL_LOGO = '/brands/kernel-logo.svg'
+const KERNEL_HERO = 'https://cdn.sanity.io/images/9i8c3jnd/production/2f99fbdc8537ab088f926ffef007dac42570fd4b-1864x1128.webp?w=2000&fm=jpg'
+
+// The Kernel Advisor Hub app reads the kernel_advisor_hub topic on demo-dbt.
+// tenant_extension=kernel routes these users to the advisor_hub_ext shared
+// extension, which also limits AI Chat to that topic (ai_chat_topics).
+const KERNEL_CONNECTION_ID = 'aa611249-952f-4a67-a3be-b415a692101b'
+const KERNEL_APP_PATH = '/apps/59ee8ab5'
+
+// The app opens on the persona passed as ?ap--persona=advisor|firm|ops.
+const KERNEL_PERSONA_LABELS = { advisor: 'Advisor', firm: 'Firm principal', ops: 'Kernel ops' }
+
+const KERNEL_BRAND = {
+  ...defaultBrand,
+  configured: true,
+  name: 'Kernel',
+  logo: '',
+  logoUrl: KERNEL_LOGO,
+  heroImage: `/api/proxy-image?url=${encodeURIComponent(KERNEL_HERO)}`,
+  primaryColor: '#05786B',
+  secondaryColor: '#032621',
+  description: 'Build your wealth with smart tools, local expertise, and a platform trusted by thousands of Kiwis.',
+  keyMessages: [
+    'Money that grows with you.',
+    'Diverse ways to grow your wealth. KiwiSaver, Kernel funds, index funds, savings and US shares in one place.',
+    'Some of the lowest fees in market. Fees from 0.25% p.a., with no transaction fees and no hidden extras.',
+    'Your life, your wealth, managed effortlessly. Individual, family, trust and advised accounts.',
+  ],
+  // Figures taken from kernelwealth.co.nz.
+  stats: [
+    { value: '80,000+', label: 'Investors with Kernel' },
+    { value: '$6 billion+', label: 'Invested with Kernel' },
+    { value: '100%', label: 'Kiwi owned' },
+    { value: '0.25% p.a.', label: 'Some of the lowest fees in market' },
+  ],
+  products: [
+    { name: 'KiwiSaver', description: 'A low-fee KiwiSaver plan for first homes and retirement.' },
+    { name: 'Kernel funds', description: '25+ expertly crafted Kernel investment funds, including the Total World Fund.' },
+    { name: 'Index funds', description: '28 low-cost index funds across global and local markets.' },
+    { name: 'Savings', description: 'PIE Save for tax efficiency or Kernel Save for flexibility, both with no lock-in.' },
+    { name: 'US shares & ETFs', description: 'Direct access to over 3,000 US shares and ETFs, traded in NZ dollars.' },
+    { name: 'Advised accounts', description: 'Accounts for individuals, families and trusts, including advised clients.' },
+  ],
+  overview: {
+    eyebrow: 'Kernel · Advisor Hub',
+    primaryCta: 'Open Kernel Advisor Hub',
+    chatCta: 'Ask about your clients',
+    heroLinksStatic: true,
+    heroLinks: [
+      { label: 'Advisor — my clients and reviews', icon: 'users' },
+      { label: 'Firm principal — how the firm is tracking', icon: 'building' },
+      { label: 'Kernel ops — onboarding, compliance and support', icon: 'shield' },
+    ],
+    features: [
+      {
+        icon: 'users',
+        eyebrow: 'Advisor',
+        title: 'Your clients, at a glance',
+        body: 'Funds under management, money in and out, reviews coming due and the clients who need attention first.',
+        points: ['Reviews due and overdue', 'Money in and out by client', 'Holdings and account changes'],
+        metric: '80,000+',
+        caption: 'Investors with Kernel',
+        linkLabel: 'Open Kernel Advisor Hub',
+      },
+      {
+        icon: 'building',
+        eyebrow: 'Firm principal',
+        title: 'How the firm is tracking',
+        body: 'Funds under management, advice fees and client onboarding against step targets, across every advisor in the firm.',
+        points: ['FUM and advice fees by advisor', 'Onboarding against step targets', 'Advisor portal adoption'],
+        metric: '$6 billion+',
+        caption: 'Invested with Kernel',
+        linkLabel: 'Open Kernel Advisor Hub',
+      },
+      {
+        icon: 'shield',
+        eyebrow: 'Kernel ops',
+        title: 'Keep the network running smoothly',
+        body: 'Account-change compliance, the review queue and support tickets across every firm on the platform.',
+        points: ['Account-change compliance', 'Review queue across firms', 'Support tickets and response'],
+        metric: '0.25% p.a.',
+        caption: 'Fees from, with no transaction fees',
+        linkLabel: 'Open Kernel Advisor Hub',
+      },
+    ],
+    productIcons: ['piggy', 'chart', 'compass', 'wallet', 'bag', 'users'],
+    servicesEyebrow: 'Diverse ways to grow your wealth',
+    servicesSub: 'Saving and investing for Kiwis — from KiwiSaver to US shares.',
+    ctaTitle: 'Time to give your money a new home?',
+    ctaSub: 'Open the Kernel Advisor Hub, or ask a question in plain English.',
+  },
+  omniApiKey: 'env',
+  embedSecret: 'env',
+  embedSecretProfile: 'kernel',
+  embedVanityDomain: 'trial.omniapp.co',
+  embedDashboardPath: KERNEL_APP_PATH,
+  embedThemeId: '',
+  showDashboardTab: false,
+  aiConnectionId: KERNEL_CONNECTION_ID,
+  allConnections: [],
+  // No airport_region (hides Flights); DO send tenant_extension.
+  embedSendRegionAttribute: false,
+  embedSendUserAttributes: true,
+  embedEntityKey: 'Kernel',
+}
+
+// Per login: the persona view the app opens on, embed mode, content role on
+// the Kernel folder, and connection role (app, AI Chat and Hub).
+const KERNEL_LOGINS = {
+  syd: { name: 'Syd', persona: 'advisor', mode: 'SINGLE_CONTENT', folderRole: 'VIEWER', connectionRole: 'VIEWER' },
+  armin: { name: 'Armin', persona: 'firm', mode: 'APPLICATION', folderRole: 'MANAGER', connectionRole: 'QUERIER' },
+  cory: { name: 'Cory', persona: 'ops', mode: 'APPLICATION', folderRole: 'VIEWER', connectionRole: 'QUERIER' },
+}
+
 // fleet_tenant drives the Omni access filter for the Custom Fleet apps.
 const FLEET_LOGINS = {
   aufleet: {
@@ -468,11 +586,12 @@ export function loginBrandFor(rawId) {
   if (FLEET_LOGINS[id]) return { logo: CUSTOM_FLEET_LOGO, name: 'Custom Fleet' }
   if (BEAMTREE_LOGINS[id]) return { logo: BEAMTREE_LOGO, name: 'Beamtree' }
   if (CBA_LOGINS[id]) return { logo: CBA_LOGO, name: 'CommBank' }
+  if (KERNEL_LOGINS[id]) return { logo: KERNEL_LOGO, name: 'Kernel' }
   return null
 }
 
 // Logins that take no password (the field hides itself in the UI).
-const PASSWORDLESS_LOGINS = new Set(['education', ...Object.keys(FLEET_LOGINS), ...Object.keys(BEAMTREE_LOGINS), ...Object.keys(CBA_LOGINS)])
+const PASSWORDLESS_LOGINS = new Set(['education', ...Object.keys(FLEET_LOGINS), ...Object.keys(BEAMTREE_LOGINS), ...Object.keys(CBA_LOGINS), ...Object.keys(KERNEL_LOGINS)])
 
 export function isPasswordlessLogin(rawId) {
   return PASSWORDLESS_LOGINS.has((rawId || '').trim().toLowerCase())
@@ -503,6 +622,31 @@ export function resolveLogin(rawId, password) {
           hp_hospital_id: `%|${bt.hospitalId}|%`,
           hp_landing_page: bt.landing,
         },
+      },
+    }
+  }
+
+  // Kernel — no password. Each login opens the app on its own persona view and
+  // carries tenant_extension=kernel (routes to the advisor_hub_ext extension).
+  const kn = KERNEL_LOGINS[id]
+  if (kn) {
+    const label = KERNEL_PERSONA_LABELS[kn.persona]
+    return {
+      ok: true,
+      brand: {
+        ...KERNEL_BRAND,
+        description: `${KERNEL_BRAND.description} Signed in to the ${label} view.`,
+        appTabs: [{ id: 'advisor-hub', label: 'Kernel Advisor Hub', path: `${KERNEL_APP_PATH}?ap--persona=${kn.persona}` }],
+        embedConnectionRoles: { [KERNEL_CONNECTION_ID]: kn.connectionRole },
+        aiConnectionRole: kn.connectionRole,
+        hubConnectionRole: kn.connectionRole,
+      },
+      user: {
+        ...resolveUser(id),
+        name: kn.name,
+        embedMode: kn.mode,
+        entityFolderRole: kn.folderRole,
+        userAttributes: { tenant_extension: 'kernel' },
       },
     }
   }
