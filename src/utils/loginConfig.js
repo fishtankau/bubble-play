@@ -560,6 +560,129 @@ const KERNEL_BRAND = {
   embedEntityKey: 'Kernel',
 }
 
+// ── Acenda Life ───────────────────────────────────────────────────────
+// Brand identity, copy and imagery from acenda.com.au (hotlink-protected, so
+// the logo and hero are served from /public). Secrets resolve server-side from
+// ACENDA_* env vars via the 'acenda' secret profile.
+export const ACENDA_LOGO = '/brands/acenda-logo.svg'
+const ACENDA_HERO = '/brands/acenda-hero.jpg'
+
+// The Life Insurance Insights app reads the life_insurance_insights topic on
+// demo-dbt. tenant_extension=acenda routes to the life_insurance_insights_ext
+// shared extension, which limits AI Chat to that topic.
+const ACENDA_CONNECTION_ID = 'aa611249-952f-4a67-a3be-b415a692101b'
+// The portal default AI Chat connection; revoked so chat can't land on it.
+const DEMO_CONNECTION_ID = '821764ab-1015-4ce7-bde8-65c518127b99'
+
+const ACENDA_APP_TABS = [
+  { id: 'life-insurance-insights', label: 'Life Insurance Insights', path: '/apps/d8895f47' },
+]
+
+const ACENDA_BRAND = {
+  ...defaultBrand,
+  configured: true,
+  name: 'Acenda Life',
+  logo: '',
+  logoUrl: ACENDA_LOGO,
+  heroImage: ACENDA_HERO,
+  primaryColor: '#002E45',
+  secondaryColor: '#001B29',
+  description: 'For over 175 years, we’ve been here to protect what matters to you.',
+  keyMessages: [
+    'Life insurance made for real lives.',
+    'Confidence that lasts a lifetime. Flexible solutions, caring support and easy-to-understand resources for every stage of life.',
+    'We don’t just talk about claims. We pay them. Dedicated claims assessors by your side with care, clarity and compassion.',
+    'Support that’s local and personal. Award-winning wellness and recovery support, here for you.',
+  ],
+  // Trust markers taken from acenda.com.au.
+  stats: [
+    { value: '175+', label: 'Years of experience' },
+    { value: 'Award-winning', label: 'Claims support' },
+    { value: 'Award-winning', label: 'Wellness and recovery support' },
+    { value: 'Local', label: 'Support that’s personal and here for you' },
+  ],
+  products: [
+    { name: 'Life Cover', description: 'A lump sum to help protect your family’s way of life if the unexpected happens.' },
+    { name: 'Income Protection', description: 'A monthly benefit to help replace your income while you recover.' },
+    { name: 'Total and Permanent Disability', description: 'Support if illness or injury means you can’t return to work.' },
+    { name: 'Critical Illness', description: 'A lump sum on diagnosis of a specified serious illness, with child cover available.' },
+    { name: 'Business Expenses', description: 'Help with the fixed costs of running your business while you can’t work.' },
+    { name: 'Premium Waiver', description: 'Keep your cover in place without paying premiums while you’re unable to work.' },
+  ],
+  overview: {
+    eyebrow: 'Acenda Life · Insights',
+    primaryCta: 'Open Life Insurance Insights',
+    chatCta: 'Ask about advisers and retention',
+    heroLinksStatic: true,
+    heroLinks: [
+      { label: 'Adviser growth — quotes and activation', icon: 'users' },
+      { label: 'Anniversary retention — campaigns that keep cover', icon: 'shield' },
+      { label: 'Customer experience — cases and claims', icon: 'heart' },
+    ],
+    features: [
+      {
+        icon: 'users',
+        eyebrow: 'Adviser growth',
+        title: 'See which advisers are growing',
+        body: 'Follow each adviser from quote to issued policy, and spot who is activating and who needs support.',
+        points: ['Quote funnel by adviser', 'Adviser activation', 'Licensee view'],
+        metric: '175+',
+        caption: 'Years protecting what matters',
+        linkLabel: 'Open Life Insurance Insights',
+      },
+      {
+        icon: 'shield',
+        eyebrow: 'Anniversary retention',
+        title: 'Keep cover in place at anniversary',
+        body: 'Measure anniversary retention campaigns against randomised holdouts, so you know what actually keeps customers covered.',
+        points: ['Campaign waves', 'Results against holdout groups', 'Upcoming anniversaries'],
+        metric: 'Every stage',
+        caption: 'Cover that changes with your life',
+        linkLabel: 'Open Life Insurance Insights',
+      },
+      {
+        icon: 'heart',
+        eyebrow: 'Customer experience',
+        title: 'Support customers when it matters',
+        body: 'Service cases, claims and campaign pauses in one place, so the Customer Experience team can act quickly.',
+        points: ['Open service cases', 'Claims in progress', 'Campaign pauses'],
+        metric: 'Award-winning',
+        caption: 'Claims support every step of the way',
+        linkLabel: 'Open Life Insurance Insights',
+      },
+    ],
+    productIcons: ['heart', 'wallet', 'shield', 'activity', 'building', 'clipboard'],
+    servicesEyebrow: 'Insurance options',
+    servicesSub: 'Flexible protection for every stage of life.',
+    ctaTitle: 'Confidence that lasts a lifetime',
+    ctaSub: 'Open Life Insurance Insights, or ask a question in plain English.',
+  },
+  omniApiKey: 'env',
+  embedSecret: 'env',
+  embedSecretProfile: 'acenda',
+  embedVanityDomain: 'trial.omniapp.co',
+  embedDashboardPath: ACENDA_APP_TABS[0].path,
+  embedThemeId: '',
+  showDashboardTab: false,
+  appTabs: ACENDA_APP_TABS,
+  // QUERIER on demo-dbt for the app, AI Chat and Hub; Demo Connection revoked.
+  embedConnectionRoles: { [ACENDA_CONNECTION_ID]: 'QUERIER', [DEMO_CONNECTION_ID]: 'NO_ACCESS' },
+  aiConnectionId: ACENDA_CONNECTION_ID,
+  aiConnectionRole: 'QUERIER',
+  allConnections: [],
+  hubConnectionRole: 'QUERIER',
+  revokeConnectionIds: [DEMO_CONNECTION_ID],
+  // No airport_region (hides Flights); DO send tenant_extension.
+  embedSendRegionAttribute: false,
+  embedSendUserAttributes: true,
+  embedEntityKey: 'Acenda',
+  embedEntityFolderRole: 'MANAGER',
+}
+
+const ACENDA_LOGINS = {
+  acenda: { name: 'Acenda' },
+}
+
 // Per login: the persona view the app opens on, embed mode, content role on
 // the Kernel folder, and connection role (app, AI Chat and Hub).
 const KERNEL_LOGINS = {
@@ -593,11 +716,12 @@ export function loginBrandFor(rawId) {
   if (BEAMTREE_LOGINS[id]) return { logo: BEAMTREE_LOGO, name: 'Beamtree' }
   if (CBA_LOGINS[id]) return { logo: CBA_LOGO, name: 'CommBank' }
   if (KERNEL_LOGINS[id]) return { logo: KERNEL_LOGO, name: 'Kernel' }
+  if (ACENDA_LOGINS[id]) return { logo: ACENDA_LOGO, name: 'Acenda Life' }
   return null
 }
 
 // Logins that take no password (the field hides itself in the UI).
-const PASSWORDLESS_LOGINS = new Set(['education', ...Object.keys(FLEET_LOGINS), ...Object.keys(BEAMTREE_LOGINS), ...Object.keys(CBA_LOGINS), ...Object.keys(KERNEL_LOGINS)])
+const PASSWORDLESS_LOGINS = new Set(['education', ...Object.keys(FLEET_LOGINS), ...Object.keys(BEAMTREE_LOGINS), ...Object.keys(CBA_LOGINS), ...Object.keys(KERNEL_LOGINS), ...Object.keys(ACENDA_LOGINS)])
 
 export function isPasswordlessLogin(rawId) {
   return PASSWORDLESS_LOGINS.has((rawId || '').trim().toLowerCase())
@@ -631,6 +755,23 @@ export function resolveLogin(rawId, password) {
           // AI Chat to the four Hospital Performance topics.
           tenant_extension: 'beamtree',
         },
+      },
+    }
+  }
+
+  // Acenda — no password. Application mode, MANAGER on the Acenda folder, and
+  // tenant_extension=acenda (routes to the life_insurance_insights_ext extension).
+  const ac = ACENDA_LOGINS[id]
+  if (ac) {
+    return {
+      ok: true,
+      brand: ACENDA_BRAND,
+      user: {
+        ...resolveUser(id),
+        name: ac.name,
+        embedMode: 'APPLICATION',
+        entityFolderRole: 'MANAGER',
+        userAttributes: { tenant_extension: 'acenda' },
       },
     }
   }

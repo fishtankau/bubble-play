@@ -28,6 +28,9 @@ export default function AIChat() {
       connectionRoles = {}
       brand.allConnections.forEach(c => { connectionRoles[c.id] = role })
     }
+    // Explicitly revoke connections a brand must not see (e.g. the default Demo
+    // Connection), in case an earlier session granted them to this embed user.
+    for (const id of brand.revokeConnectionIds || []) connectionRoles = { ...connectionRoles, [id]: 'NO_ACCESS' }
 
     fetch('/api/omni-embed-url', {
       method: 'POST',
@@ -54,7 +57,7 @@ export default function AIChat() {
       })
       .catch(err => setError(err.message))
       .finally(() => setLoading(false))
-  }, [brand.embedSecret, brand.embedVanityDomain, brand.aiConnectionId, brand.aiConnectionRole, brand.aiModelRoles, brand.embedSendRegionAttribute, currentUser?.externalId])
+  }, [brand.embedSecret, brand.embedVanityDomain, brand.aiConnectionId, brand.aiConnectionRole, brand.aiModelRoles, brand.revokeConnectionIds, brand.embedSendRegionAttribute, currentUser?.externalId])
 
   if (loading) {
     return (

@@ -37,6 +37,12 @@ export default function Hub({ onNavigate }) {
       brand.allConnections.forEach(c => { allRoles[c.id] = role })
       connectionRoles = JSON.stringify(allRoles)
     }
+    // Same explicit revocation as AI Chat (see brand.revokeConnectionIds).
+    if (brand.revokeConnectionIds?.length) {
+      const roles = connectionRoles ? JSON.parse(connectionRoles) : {}
+      brand.revokeConnectionIds.forEach(id => { roles[id] = 'NO_ACCESS' })
+      connectionRoles = JSON.stringify(roles)
+    }
 
     // Always put the user in "All Embed Users" (so they see org-shared
     // content like the Templates folder) PLUS a per-brand group named
@@ -94,6 +100,7 @@ export default function Hub({ onNavigate }) {
     brand.embedEntityFolderRole,
     brand.embedHubGroups,
     brand.hubConnectionRole,
+    brand.revokeConnectionIds,
     brand.aiConnectionId,
     brand.aiConnectionRole,
     brand.embedSendRegionAttribute,
