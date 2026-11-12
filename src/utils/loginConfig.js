@@ -167,6 +167,12 @@ const FLEET_CONSOLE_BRAND = {
   // QUERIER so the app's non-topic queries (CF Actions, CF Audit) return rows
   // and Blobby is available; RESTRICTED_QUERIER can only query topics.
   embedConnectionRoles: { [FLEET_CONNECTION_ID]: 'QUERIER' },
+  // AI Chat and Hub also use demo-dbt (the portal default is Demo Connection,
+  // which holds no fleet data).
+  aiConnectionId: FLEET_CONNECTION_ID,
+  aiConnectionRole: 'QUERIER',
+  allConnections: [],
+  hubConnectionRole: 'QUERIER',
   embedVanityDomain: 'trial.omniapp.co',
   embedDashboardPath: FLEET_APP_TABS[0].path,
   embedThemeId: '',
@@ -684,7 +690,9 @@ export function resolveLogin(rawId, password) {
         // (AU: single content, MANAGER; NZ: application, VIEWER).
         embedMode: fleet.mode,
         entityFolderRole: fleet.folderRole,
-        userAttributes: { fleet_tenant: fleet.tenant },
+        // tenant_extension routes to the vehicle_telematics_ext shared extension,
+        // which limits AI Chat to the Vehicle Telematics topic.
+        userAttributes: { fleet_tenant: fleet.tenant, tenant_extension: 'customfleet' },
       },
     }
   }
