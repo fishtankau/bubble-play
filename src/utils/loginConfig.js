@@ -621,6 +621,9 @@ export function resolveLogin(rawId, password) {
           hp_persona: bt.persona,
           hp_hospital_id: `%|${bt.hospitalId}|%`,
           hp_landing_page: bt.landing,
+          // Routes to the hospital_performance_ext shared extension, which limits
+          // AI Chat to the four Hospital Performance topics.
+          tenant_extension: 'beamtree',
         },
       },
     }
