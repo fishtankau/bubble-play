@@ -679,6 +679,130 @@ const ACENDA_BRAND = {
   embedEntityFolderRole: 'MANAGER',
 }
 
+// ── ROLLER ────────────────────────────────────────────────────────────
+// Brand identity, copy and imagery from roller.software. ROLLER's logo is a
+// white wordmark for dark backgrounds, so /public holds a copy recoloured to
+// ROLLER navy. Secrets resolve server-side via the 'roller' secret profile.
+export const ROLLER_LOGO = '/brands/roller-logo.svg'
+const ROLLER_HERO = '/brands/roller-hero.jpg'
+
+// The Revenue pulse app reads the roller_venue_pulse topic on demo-dbt.
+// tenant_extension=roller routes to the roller_venue_management_ext shared
+// extension (AI Chat limited to Revenue Pulse). In the app, rp_role picks the
+// persona and rp_venue_id limits rows to a venue (all = every venue).
+const ROLLER_CONNECTION_ID = 'aa611249-952f-4a67-a3be-b415a692101b'
+
+const ROLLER_APP_TABS = [
+  { id: 'revenue-pulse', label: 'Revenue pulse', path: '/apps/bebd05f7' },
+]
+
+const ROLLER_BRAND = {
+  ...defaultBrand,
+  configured: true,
+  name: 'ROLLER',
+  logo: '',
+  logoUrl: ROLLER_LOGO,
+  heroImage: ROLLER_HERO,
+  primaryColor: '#074DC5',
+  secondaryColor: '#011840',
+  description: 'Everything your venue needs to move faster, simplify operations, and grow with confidence.',
+  keyMessages: [
+    'The platform powering 3,500+ thriving attractions.',
+    'Increase your online revenue. Flexible bookings and add-on sales in an easy-to-use ticketing experience.',
+    'Sell faster and keep lines flowing. A fully integrated point of sale for tickets, food and beverage, parties and memberships.',
+    'Save time managing multiple venues. Keep your brand consistent across locations, with visibility from one HQ account.',
+  ],
+  // Figures taken from roller.software.
+  stats: [
+    { value: '3,500+', label: 'Customers worldwide' },
+    { value: '165M', label: 'Guests served annually' },
+    { value: '24/7', label: 'Global support' },
+    { value: '125 hrs', label: 'Saved per year with analytics' },
+  ],
+  products: [
+    { name: 'Online Ticketing', description: 'Flexible bookings and add-on sales that grow online revenue.' },
+    { name: 'Point of Sale', description: 'Sell tickets, food and beverage, merchandise, parties and memberships in one place.' },
+    { name: 'Memberships', description: 'Recurring revenue and repeat visits, with member billing built in.' },
+    { name: 'Waivers', description: 'Digital waivers that cut check-in time and keep lines moving.' },
+    { name: 'Loyalty', description: 'Built-in loyalty that brings more guests back.' },
+    { name: 'Reporting & Analytics', description: 'Turn venue data into decisions, across one venue or many.' },
+  ],
+  overview: {
+    eyebrow: 'ROLLER · Bounce Harbor Adventure Parks',
+    primaryCta: 'Open Revenue pulse',
+    chatCta: 'Ask about your venues',
+    heroLinksStatic: true,
+    heroLinks: [
+      { label: 'Group owner — every venue at a glance', icon: 'building' },
+      { label: 'Venue manager — today at Harbor Point', icon: 'gauge' },
+      { label: 'Marketing lead — win back and fill sessions', icon: 'chart' },
+    ],
+    features: [
+      {
+        icon: 'building',
+        eyebrow: 'Group owner',
+        title: 'Every venue, one view',
+        body: 'Revenue, bookings and capacity across all five Bounce Harbor parks, with the queues that need attention first.',
+        points: ['Revenue and spend across venues', 'Member billing and failed payments', 'What-if planning'],
+        metric: '3,500+',
+        caption: 'Attractions run on ROLLER',
+        linkLabel: 'Open Revenue pulse',
+      },
+      {
+        icon: 'gauge',
+        eyebrow: 'Venue manager',
+        title: 'Run today at your venue',
+        body: 'Sessions, capacity, deposits and waivers for your park, so the team can act before guests arrive.',
+        points: ['Today’s sessions and capacity', 'Deposits and waivers to chase', 'Comparisons with other venues, anonymised'],
+        metric: '24/7',
+        caption: 'Global support',
+        linkLabel: 'Open Revenue pulse',
+      },
+      {
+        icon: 'chart',
+        eyebrow: 'Marketing lead',
+        title: 'Bring more guests back',
+        body: 'Abandoned carts, peak sessions and win-back opportunities, with the trends behind them.',
+        points: ['Abandoned carts', 'Peak sessions to fill', 'Win-back audiences'],
+        metric: '165M',
+        caption: 'Guests served annually',
+        linkLabel: 'Open Revenue pulse',
+      },
+    ],
+    productIcons: ['report', 'wallet', 'users', 'clipboard', 'heart', 'chart'],
+    servicesEyebrow: 'All-in-one venue management',
+    servicesSub: 'Purpose-built for growing attractions businesses, from one venue to 100.',
+    ctaTitle: 'Get more growth from what you already have',
+    ctaSub: 'Open Revenue pulse, or ask a question in plain English.',
+  },
+  omniApiKey: 'env',
+  embedSecret: 'env',
+  embedSecretProfile: 'roller',
+  embedVanityDomain: 'trial.omniapp.co',
+  embedDashboardPath: ROLLER_APP_TABS[0].path,
+  embedThemeId: '',
+  showDashboardTab: false,
+  appTabs: ROLLER_APP_TABS,
+  // QUERIER on demo-dbt for the app, AI Chat and Hub; Demo Connection revoked.
+  embedConnectionRoles: { [ROLLER_CONNECTION_ID]: 'QUERIER', [DEMO_CONNECTION_ID]: 'NO_ACCESS' },
+  aiConnectionId: ROLLER_CONNECTION_ID,
+  aiConnectionRole: 'QUERIER',
+  allConnections: [],
+  hubConnectionRole: 'QUERIER',
+  revokeConnectionIds: [DEMO_CONNECTION_ID],
+  // No airport_region (hides Flights); DO send the rp_* and tenant_extension attributes.
+  embedSendRegionAttribute: false,
+  embedSendUserAttributes: true,
+  embedEntityKey: 'ROLLER',
+}
+
+// Per login: the app persona (rp_role) and venue scope (rp_venue_id).
+const ROLLER_LOGINS = {
+  andrew: { name: 'Andrew', role: 'owner', venue: 'all', label: 'Group owner' },
+  aaron: { name: 'Aaron', role: 'manager', venue: 'HP', label: 'Venue manager · Harbor Point' },
+  alec: { name: 'Alec', role: 'marketing', venue: 'all', label: 'Marketing lead' },
+}
+
 const ACENDA_LOGINS = {
   acenda: { name: 'Acenda' },
 }
@@ -717,11 +841,12 @@ export function loginBrandFor(rawId) {
   if (CBA_LOGINS[id]) return { logo: CBA_LOGO, name: 'CommBank' }
   if (KERNEL_LOGINS[id]) return { logo: KERNEL_LOGO, name: 'Kernel' }
   if (ACENDA_LOGINS[id]) return { logo: ACENDA_LOGO, name: 'Acenda Life' }
+  if (ROLLER_LOGINS[id]) return { logo: ROLLER_LOGO, name: 'ROLLER' }
   return null
 }
 
 // Logins that take no password (the field hides itself in the UI).
-const PASSWORDLESS_LOGINS = new Set(['education', ...Object.keys(FLEET_LOGINS), ...Object.keys(BEAMTREE_LOGINS), ...Object.keys(CBA_LOGINS), ...Object.keys(KERNEL_LOGINS), ...Object.keys(ACENDA_LOGINS)])
+const PASSWORDLESS_LOGINS = new Set(['education', ...Object.keys(FLEET_LOGINS), ...Object.keys(BEAMTREE_LOGINS), ...Object.keys(CBA_LOGINS), ...Object.keys(KERNEL_LOGINS), ...Object.keys(ACENDA_LOGINS), ...Object.keys(ROLLER_LOGINS)])
 
 export function isPasswordlessLogin(rawId) {
   return PASSWORDLESS_LOGINS.has((rawId || '').trim().toLowerCase())
@@ -755,6 +880,22 @@ export function resolveLogin(rawId, password) {
           // AI Chat to the four Hospital Performance topics.
           tenant_extension: 'beamtree',
         },
+      },
+    }
+  }
+
+  // ROLLER — no password. Single content, connection QUERIER; rp_role/rp_venue_id
+  // set the persona and venue, tenant_extension=roller routes to the extension.
+  const rl = ROLLER_LOGINS[id]
+  if (rl) {
+    return {
+      ok: true,
+      brand: { ...ROLLER_BRAND, description: `${ROLLER_BRAND.description} Signed in as ${rl.label}.` },
+      user: {
+        ...resolveUser(id),
+        name: rl.name,
+        embedMode: 'SINGLE_CONTENT',
+        userAttributes: { tenant_extension: 'roller', rp_role: rl.role, rp_venue_id: rl.venue },
       },
     }
   }
