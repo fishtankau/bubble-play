@@ -688,8 +688,8 @@ const ROLLER_HERO = '/brands/roller-hero.jpg'
 
 // The Revenue pulse app reads the roller_venue_pulse topic on demo-dbt.
 // tenant_extension=roller routes to the roller_venue_management_ext shared
-// extension (AI Chat limited to Revenue Pulse). In the app, rp_role picks the
-// persona and rp_venue_id limits rows to a venue (all = every venue).
+// extension (AI Chat limited to Revenue Pulse). In the app, access_scope sets
+// the persona and venue scope (roller:all, roller:venue:HP, roller:marketing).
 const ROLLER_CONNECTION_ID = 'aa611249-952f-4a67-a3be-b415a692101b'
 
 const ROLLER_APP_TABS = [
@@ -790,17 +790,18 @@ const ROLLER_BRAND = {
   allConnections: [],
   hubConnectionRole: 'QUERIER',
   revokeConnectionIds: [DEMO_CONNECTION_ID],
-  // No airport_region (hides Flights); DO send the rp_* and tenant_extension attributes.
+  // No airport_region (hides Flights); DO send the access_scope and tenant_extension attributes.
   embedSendRegionAttribute: false,
   embedSendUserAttributes: true,
   embedEntityKey: 'ROLLER',
 }
 
-// Per login: the app persona (rp_role) and venue scope (rp_venue_id).
+// Per login: access_scope sets the persona and venue scope in the app
+// (roller:all, roller:venue:<venue id>, roller:marketing).
 const ROLLER_LOGINS = {
-  andrew: { name: 'Andrew', role: 'owner', venue: 'all', label: 'Group owner' },
-  aaron: { name: 'Aaron', role: 'manager', venue: 'HP', label: 'Venue manager · Harbor Point' },
-  alec: { name: 'Alec', role: 'marketing', venue: 'all', label: 'Marketing lead' },
+  andrew: { name: 'Andrew', accessScope: 'roller:all', label: 'Group owner' },
+  aaron: { name: 'Aaron', accessScope: 'roller:venue:HP', label: 'Venue manager · Harbor Point' },
+  alec: { name: 'Alec', accessScope: 'roller:marketing', label: 'Marketing lead' },
 }
 
 const ACENDA_LOGINS = {
@@ -884,8 +885,8 @@ export function resolveLogin(rawId, password) {
     }
   }
 
-  // ROLLER — no password. Single content, connection QUERIER; rp_role/rp_venue_id
-  // set the persona and venue, tenant_extension=roller routes to the extension.
+  // ROLLER — no password. Single content, connection QUERIER; access_scope
+  // sets the persona and venue, tenant_extension=roller routes to the extension.
   const rl = ROLLER_LOGINS[id]
   if (rl) {
     return {
@@ -895,7 +896,7 @@ export function resolveLogin(rawId, password) {
         ...resolveUser(id),
         name: rl.name,
         embedMode: 'SINGLE_CONTENT',
-        userAttributes: { tenant_extension: 'roller', rp_role: rl.role, rp_venue_id: rl.venue },
+        userAttributes: { tenant_extension: 'roller', access_scope: rl.accessScope },
       },
     }
   }
@@ -912,7 +913,7 @@ export function resolveLogin(rawId, password) {
         name: ac.name,
         embedMode: 'APPLICATION',
         entityFolderRole: 'MANAGER',
-        userAttributes: { tenant_extension: 'acenda' },
+        userAttributes: { tenant_extension: 'acenda', access_scope: 'acenda:all' },
       },
     }
   }
