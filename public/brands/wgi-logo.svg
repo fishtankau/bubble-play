@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 56" role="img" aria-label="Wealth Group India">
+  <rect x="2" y="6" width="44" height="44" rx="10" fill="#0E4D64"/>
+  <path d="M12 20l5 16 5-12 5 12 5-16" fill="none" stroke="#E0A93B" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="58" y="27" font-family="Inter, Helvetica, Arial, sans-serif" font-size="19" font-weight="700" fill="#0E4D64">Wealth Group</text>
+  <text x="58" y="47" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" font-weight="600" letter-spacing="3" fill="#B07D1F">INDIA</text>
+</svg>

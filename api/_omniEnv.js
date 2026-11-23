@@ -16,6 +16,7 @@
 //   KERNEL_OMNI_API_KEY / KERNEL_EMBED_SECRET    → Kernel Fintech ('kernel')
 //   ACENDA_OMNI_API_KEY / ACENDA_EMBED_SECRET    → Acenda Life ('acenda')
 //   ROLLER_OMNI_API_KEY / ROLLER_EMBED_SECRET    → ROLLER ('roller')
+//   WGI_OMNI_API_KEY / WGI_EMBED_SECRET          → Wealth Group India ('wgi')
 const SENTINELS = new Set(['', 'env', '__env__']);
 
 function isSentinel(v) {
@@ -36,6 +37,7 @@ export function resolveApiKey(body = {}) {
   if (body.secretProfile === 'kernel') return process.env.KERNEL_OMNI_API_KEY || '';
   if (body.secretProfile === 'acenda') return process.env.ACENDA_OMNI_API_KEY || '';
   if (body.secretProfile === 'roller') return process.env.ROLLER_OMNI_API_KEY || '';
+  if (body.secretProfile === 'wgi') return process.env.WGI_OMNI_API_KEY || '';
   const host = hostOf(body.vanityDomain);
   if (host.includes('trial.omniapp.co')) return process.env.SEATAC_OMNI_API_KEY || '';
   if (host.includes('exploreomni')) return process.env.OMNI_API_KEY || '';
@@ -52,6 +54,7 @@ export function resolveEmbedSecret(body = {}) {
   if (body.secretProfile === 'kernel') return process.env.KERNEL_EMBED_SECRET || '';
   if (body.secretProfile === 'acenda') return process.env.ACENDA_EMBED_SECRET || '';
   if (body.secretProfile === 'roller') return process.env.ROLLER_EMBED_SECRET || '';
+  if (body.secretProfile === 'wgi') return process.env.WGI_EMBED_SECRET || '';
   const host = hostOf(body.vanityDomain);
   if (host.includes('trial.omniapp.co')) return process.env.SEATAC_EMBED_SECRET || '';
   if (host.includes('exploreomni')) return process.env.OMNI_EMBED_SECRET || '';

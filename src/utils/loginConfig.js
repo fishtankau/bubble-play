@@ -804,6 +804,112 @@ const ROLLER_LOGINS = {
   alec: { name: 'Alec', accessScope: 'roller:marketing', label: 'Marketing lead' },
 }
 
+// ── Wealth Group India ────────────────────────────────────────────────
+// Synthetic demo brand for the Partner Pulse v2 app (a673abf0) on demo-dbt.
+// The app reads the wgi_book_pulse topic; tenant_extension=wealth_group_india
+// routes to the shared extension, and access_scope sets rows and access level
+// (wgi:all = Hub head, wgi:area:RN = Brian Vu's desks only). Password logins
+// (password 'rathi'). Secrets resolve server-side via the 'wgi' secret profile.
+export const WGI_LOGO = '/brands/wgi-logo.svg'
+const WGI_CONNECTION_ID = 'aa611249-952f-4a67-a3be-b415a692101b'
+const WGI_PASSWORD = 'rathi'
+
+const WGI_APP_TABS = [
+  { id: 'partner-pulse', label: 'Partner Pulse', path: '/apps/a673abf0' },
+]
+
+const WGI_BRAND = {
+  ...defaultBrand,
+  configured: true,
+  name: 'Wealth Group India',
+  logo: '',
+  logoUrl: WGI_LOGO,
+  primaryColor: '#0E4D64',
+  secondaryColor: '#B07D1F',
+  description: 'The partner hub for Wealth Group India: every partner desk, its book and the actions that move it, in one place.',
+  keyMessages: [
+    'See every partner desk at a glance, from the hub down to a single area.',
+    'Work the queues that matter today, and write actions straight back.',
+    'Spot the trends in each book before they become problems.',
+    'Test what-if scenarios before you commit to them.',
+  ],
+  // Figures describe the synthetic demo data set.
+  stats: [
+    { value: '12', label: 'Partner desks' },
+    { value: '3', label: 'Area managers' },
+    { value: '4', label: 'Views: Today, Queues, Trends, What if' },
+    { value: '1', label: 'Hub for every book' },
+  ],
+  products: [
+    { name: 'Today', description: 'What needs attention across the partner book right now.' },
+    { name: 'Queues', description: 'Prioritised work for each desk, with actions written back.' },
+    { name: 'Trends', description: 'How each book and desk is moving over time.' },
+    { name: 'What if', description: 'Model scenarios before you act on them.' },
+  ],
+  overview: {
+    eyebrow: 'Wealth Group India · Partner hub',
+    primaryCta: 'Open Partner Pulse',
+    chatCta: 'Ask about your partner book',
+    heroLinksStatic: true,
+    heroLinks: [
+      { label: 'Hub head — every partner desk', icon: 'building' },
+      { label: 'Area manager — your desks only', icon: 'gauge' },
+    ],
+    features: [
+      {
+        icon: 'building',
+        eyebrow: 'Hub head',
+        title: 'Every desk, one view',
+        body: 'All 12 partner desks across the three areas, with the queues and trends that need attention first.',
+        points: ['Book and partner pulse across the hub', 'Queues by desk and area', 'What-if planning'],
+        metric: '12',
+        caption: 'Partner desks',
+        linkLabel: 'Open Partner Pulse',
+      },
+      {
+        icon: 'gauge',
+        eyebrow: 'Area manager',
+        title: 'Run your area',
+        body: 'Your own desks only, so you can work today’s queue and act before the book moves.',
+        points: ['Today for your desks', 'Actions written back', 'Trends in your book'],
+        metric: '3',
+        caption: 'Area managers',
+        linkLabel: 'Open Partner Pulse',
+      },
+    ],
+    productIcons: ['report', 'clipboard', 'chart', 'wallet'],
+    servicesEyebrow: 'Partner Pulse',
+    servicesSub: 'Insight to action for the whole partner hub.',
+    ctaTitle: 'Know your partner book, and act on it',
+    ctaSub: 'Open Partner Pulse, or ask a question in plain English.',
+  },
+  omniApiKey: 'env',
+  embedSecret: 'env',
+  embedSecretProfile: 'wgi',
+  embedVanityDomain: 'trial.omniapp.co',
+  embedDashboardPath: WGI_APP_TABS[0].path,
+  embedThemeId: '',
+  showDashboardTab: false,
+  appTabs: WGI_APP_TABS,
+  // QUERIER on demo-dbt for the app, AI Chat and Hub; Demo Connection revoked.
+  embedConnectionRoles: { [WGI_CONNECTION_ID]: 'QUERIER', [DEMO_CONNECTION_ID]: 'NO_ACCESS' },
+  aiConnectionId: WGI_CONNECTION_ID,
+  aiConnectionRole: 'QUERIER',
+  allConnections: [],
+  hubConnectionRole: 'QUERIER',
+  revokeConnectionIds: [DEMO_CONNECTION_ID],
+  // No airport_region (hides Flights); DO send the access_scope and tenant_extension attributes.
+  embedSendRegionAttribute: false,
+  embedSendUserAttributes: true,
+  embedEntityKey: 'Wealth Group India',
+}
+
+// Per login: access_scope, embed mode and content role on the WGI folder.
+const WGI_LOGINS = {
+  oscar: { name: 'Oscar', accessScope: 'wgi:all', label: 'Hub head', mode: 'APPLICATION', folderRole: 'MANAGER' },
+  brian: { name: 'Brian', accessScope: 'wgi:area:RN', label: 'Area manager · RN', mode: 'SINGLE_CONTENT', folderRole: 'VIEWER' },
+}
+
 const ACENDA_LOGINS = {
   acenda: { name: 'Acenda' },
 }
@@ -843,6 +949,7 @@ export function loginBrandFor(rawId) {
   if (KERNEL_LOGINS[id]) return { logo: KERNEL_LOGO, name: 'Kernel' }
   if (ACENDA_LOGINS[id]) return { logo: ACENDA_LOGO, name: 'Acenda Life' }
   if (ROLLER_LOGINS[id]) return { logo: ROLLER_LOGO, name: 'ROLLER' }
+  if (WGI_LOGINS[id]) return { logo: WGI_LOGO, name: 'Wealth Group India' }
   return null
 }
 
@@ -897,6 +1004,24 @@ export function resolveLogin(rawId, password) {
         name: rl.name,
         embedMode: 'SINGLE_CONTENT',
         userAttributes: { tenant_extension: 'roller', access_scope: rl.accessScope },
+      },
+    }
+  }
+
+  // Wealth Group India — password 'rathi'. access_scope sets rows and access
+  // level; tenant_extension=wealth_group_india routes to the extension.
+  const wgi = WGI_LOGINS[id]
+  if (wgi) {
+    if (password !== WGI_PASSWORD) return { ok: false, error: 'Incorrect password.' }
+    return {
+      ok: true,
+      brand: { ...WGI_BRAND, description: `${WGI_BRAND.description} Signed in as ${wgi.label}.` },
+      user: {
+        ...resolveUser(id),
+        name: wgi.name,
+        embedMode: wgi.mode,
+        entityFolderRole: wgi.folderRole,
+        userAttributes: { tenant_extension: 'wealth_group_india', access_scope: wgi.accessScope },
       },
     }
   }
