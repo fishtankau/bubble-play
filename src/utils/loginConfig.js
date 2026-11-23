@@ -918,8 +918,8 @@ const ACENDA_LOGINS = {
 // the Kernel folder, and connection role (app, AI Chat and Hub).
 const KERNEL_LOGINS = {
   syd: { name: 'Syd', persona: 'advisor', mode: 'SINGLE_CONTENT', folderRole: 'VIEWER', connectionRole: 'VIEWER' },
-  armin: { name: 'Armin', persona: 'firm', mode: 'APPLICATION', folderRole: 'MANAGER', connectionRole: 'QUERIER' },
-  cory: { name: 'Cory', persona: 'ops', mode: 'APPLICATION', folderRole: 'VIEWER', connectionRole: 'QUERIER' },
+  armin: { name: 'Armin', persona: 'firm', mode: 'APPLICATION', folderRole: 'MANAGER', connectionRole: 'RESTRICTED_QUERIER' },
+  cory: { name: 'Cory', persona: 'ops', mode: 'APPLICATION', folderRole: 'VIEWER', connectionRole: 'RESTRICTED_QUERIER' },
 }
 
 // fleet_tenant drives the Omni access filter for the Custom Fleet apps.
