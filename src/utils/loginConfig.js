@@ -910,6 +910,114 @@ const WGI_LOGINS = {
   brian: { name: 'Brian', accessScope: 'wgi:area:RN', label: 'Area manager · RN', mode: 'SINGLE_CONTENT', folderRole: 'VIEWER' },
 }
 
+// ── Auto Dealer Finance (Angle Auto Finance) ──────────────────────────
+// Demo brand for the Dealer finance hub app (67cffb2c) on demo-dbt. The app
+// reads the angle_dealer_finance topic; tenant_extension=angle_auto routes to
+// the angle_auto_ext shared extension, and access_scope sets rows and persona
+// (angle:all = regional manager, angle:am:<name> = that account manager).
+// Password 'angle'. oscar and brian are also Wealth Group India logins
+// (password 'rathi'), so the password picks the brand, and these logins use
+// their own embed users (<id>-angle). Secrets via the 'angle' secret profile.
+export const ADF_LOGO = '/brands/adf-logo.svg'
+const ADF_CONNECTION_ID = 'aa611249-952f-4a67-a3be-b415a692101b'
+const ADF_PASSWORD = 'angle'
+
+const ADF_APP_TABS = [
+  { id: 'dealer-finance-hub', label: 'Dealer finance hub', path: '/apps/67cffb2c' },
+]
+
+const ADF_BRAND = {
+  ...defaultBrand,
+  configured: true,
+  name: 'Auto Dealer Finance',
+  logo: '',
+  logoUrl: ADF_LOGO,
+  primaryColor: '#1F3A5F',
+  secondaryColor: '#C27A12',
+  description: 'The Eastern region dealer finance hub: every dealership, its finance book and the actions that move it, in one place.',
+  keyMessages: [
+    'See every dealership at a glance, from the region down to one account manager.',
+    'Work today’s action queues and write actions straight back.',
+    'Spot the trends in each dealer’s book before they become problems.',
+    'Test what-if scenarios before you commit to them.',
+  ],
+  // Figures describe the demo data set.
+  stats: [
+    { value: '8', label: 'Dealerships' },
+    { value: '1', label: 'Region (Eastern)' },
+    { value: '4', label: 'Views: Today, Queues, Trends, What if' },
+    { value: '1', label: 'Hub for every dealer book' },
+  ],
+  products: [
+    { name: 'Today', description: 'What needs attention across the dealer book right now.' },
+    { name: 'Action queues', description: 'Prioritised work for each dealership, with actions written back.' },
+    { name: 'Trends', description: 'How each dealer and account manager is moving over time.' },
+    { name: 'What if', description: 'Model scenarios before you act on them.' },
+  ],
+  overview: {
+    eyebrow: 'Auto Dealer Finance · Eastern region',
+    primaryCta: 'Open Dealer finance hub',
+    chatCta: 'Ask about your dealerships',
+    heroLinksStatic: true,
+    heroLinks: [
+      { label: 'Regional manager — every dealership', icon: 'building' },
+      { label: 'Account manager — your dealerships only', icon: 'gauge' },
+    ],
+    features: [
+      {
+        icon: 'building',
+        eyebrow: 'Regional manager',
+        title: 'Every dealership, one view',
+        body: 'All 8 Eastern region dealerships, with the queues and trends that need attention first.',
+        points: ['Finance book across the region', 'Action queues by dealership', 'What-if planning'],
+        metric: '8',
+        caption: 'Dealerships',
+        linkLabel: 'Open Dealer finance hub',
+      },
+      {
+        icon: 'gauge',
+        eyebrow: 'Account manager',
+        title: 'Run your dealerships',
+        body: 'Your own dealerships only, so you can work today’s queue and act before the book moves.',
+        points: ['Today for your dealers', 'Actions written back', 'Trends in your book'],
+        metric: '4',
+        caption: 'Views in the hub',
+        linkLabel: 'Open Dealer finance hub',
+      },
+    ],
+    productIcons: ['report', 'clipboard', 'chart', 'wallet'],
+    servicesEyebrow: 'Dealer finance hub',
+    servicesSub: 'Insight to action for the whole dealer network.',
+    ctaTitle: 'Know your dealer book, and act on it',
+    ctaSub: 'Open the Dealer finance hub, or ask a question in plain English.',
+  },
+  omniApiKey: 'env',
+  embedSecret: 'env',
+  embedSecretProfile: 'angle',
+  embedVanityDomain: 'trial.omniapp.co',
+  embedDashboardPath: ADF_APP_TABS[0].path,
+  embedThemeId: '',
+  showDashboardTab: false,
+  appTabs: ADF_APP_TABS,
+  // QUERIER on demo-dbt for the app, AI Chat and Hub; Demo Connection revoked.
+  embedConnectionRoles: { [ADF_CONNECTION_ID]: 'QUERIER', [DEMO_CONNECTION_ID]: 'NO_ACCESS' },
+  aiConnectionId: ADF_CONNECTION_ID,
+  aiConnectionRole: 'QUERIER',
+  allConnections: [],
+  hubConnectionRole: 'QUERIER',
+  revokeConnectionIds: [DEMO_CONNECTION_ID],
+  // No airport_region (hides Flights); DO send the access_scope and tenant_extension attributes.
+  embedSendRegionAttribute: false,
+  embedSendUserAttributes: true,
+  embedEntityKey: 'Auto Dealer Finance',
+}
+
+// Per login: access_scope, embed mode and content role on the ADF folder.
+const ADF_LOGINS = {
+  oscar: { name: 'Oscar', accessScope: 'angle:all', label: 'Regional manager', mode: 'APPLICATION', folderRole: 'MANAGER' },
+  brian: { name: 'Brian', accessScope: 'angle:am:Brian Vu', label: 'Account manager · Brian Vu', mode: 'SINGLE_CONTENT', folderRole: 'VIEWER' },
+}
+
 const ACENDA_LOGINS = {
   acenda: { name: 'Acenda' },
 }
@@ -949,7 +1057,11 @@ export function loginBrandFor(rawId) {
   if (KERNEL_LOGINS[id]) return { logo: KERNEL_LOGO, name: 'Kernel' }
   if (ACENDA_LOGINS[id]) return { logo: ACENDA_LOGO, name: 'Acenda Life' }
   if (ROLLER_LOGINS[id]) return { logo: ROLLER_LOGO, name: 'ROLLER' }
+  // oscar/brian are both WGI and Auto Dealer Finance logins (the password
+  // picks the brand), so the card stays neutral for them.
+  if (WGI_LOGINS[id] && ADF_LOGINS[id]) return null
   if (WGI_LOGINS[id]) return { logo: WGI_LOGO, name: 'Wealth Group India' }
+  if (ADF_LOGINS[id]) return { logo: ADF_LOGO, name: 'Auto Dealer Finance' }
   return null
 }
 
@@ -1007,6 +1119,27 @@ export function resolveLogin(rawId, password) {
       },
     }
   }
+
+  // Auto Dealer Finance — password 'angle'. Checked before Wealth Group India
+  // because oscar/brian exist in both; each brand has its own embed users.
+  const adf = ADF_LOGINS[id]
+  if (adf && password === ADF_PASSWORD) {
+    const base = resolveUser(id)
+    return {
+      ok: true,
+      brand: { ...ADF_BRAND, description: `${ADF_BRAND.description} Signed in as ${adf.label}.` },
+      user: {
+        ...base,
+        externalId: `${id}-angle`,
+        email: `${id}-angle@fishtank.local`,
+        name: adf.name,
+        embedMode: adf.mode,
+        entityFolderRole: adf.folderRole,
+        userAttributes: { tenant_extension: 'angle_auto', access_scope: adf.accessScope },
+      },
+    }
+  }
+  if (adf && !WGI_LOGINS[id]) return { ok: false, error: 'Incorrect password.' }
 
   // Wealth Group India — password 'rathi'. access_scope sets rows and access
   // level; tenant_extension=wealth_group_india routes to the extension.
