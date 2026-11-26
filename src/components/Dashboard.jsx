@@ -32,7 +32,7 @@ const tabComponents = {
 }
 
 export default function Dashboard({ onLogout }) {
-  const [activeTab, setActiveTab] = useState('overview')
+  const [selectedTab, setActiveTab] = useState('overview')
   // Dark mode toggle removed from the header; embeds still receive the flag.
   const [darkMode] = useState(false)
   const [pushSending, setPushSending] = useState(false)
@@ -56,7 +56,11 @@ export default function Dashboard({ onLogout }) {
   }))
   const withExtras = BASE_TABS.flatMap(t => (t.id === 'aichat' ? [t, ...extraTabs] : [t]))
 
+  // A brand can drop base tabs entirely (e.g. Pantry: no Overview, AI Chat or Hub).
+  const hiddenTabs = new Set(Array.isArray(brand.hiddenTabs) ? brand.hiddenTabs : [])
+
   const configuredTabs = withExtras.filter(t => {
+    if (hiddenTabs.has(t.id)) return false
     if (t.id === 'flights' && flightsHidden) return false
     if (t.id === 'apps' && !brand.embedAppPath) return false
     // A brand with its own app tabs replaces the generic Dashboard tab.
@@ -64,11 +68,9 @@ export default function Dashboard({ onLogout }) {
     return true
   })
 
-  // If user is currently on Flights but it just got hidden, bounce back to Overview.
-  const availableIds = configuredTabs.map(t => t.id).join(',')
-  useEffect(() => {
-    if (!availableIds.split(',').includes(activeTab)) setActiveTab('overview')
-  }, [availableIds, activeTab])
+  // Show the selected tab if this brand has it; otherwise land on the first
+  // tab (Overview for most brands, the app embed when Overview is hidden).
+  const activeTab = configuredTabs.some(t => t.id === selectedTab) ? selectedTab : configuredTabs[0]?.id
 
   const activeAppTab = configuredTabs.find(t => t.id === activeTab)?.appTab
   const ActiveComponent = tabComponents[activeTab]

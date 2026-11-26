@@ -18,6 +18,7 @@
 //   ROLLER_OMNI_API_KEY / ROLLER_EMBED_SECRET    → ROLLER ('roller')
 //   WGI_OMNI_API_KEY / WGI_EMBED_SECRET          → Wealth Group India ('wgi')
 //   ANGLE_OMNI_API_KEY / ANGLE_EMBED_SECRET      → Auto Dealer Finance ('angle')
+//   PANTRY_OMNI_API_KEY / PANTRY_EMBED_SECRET    → Pantry ('pantry')
 const SENTINELS = new Set(['', 'env', '__env__']);
 
 function isSentinel(v) {
@@ -40,6 +41,7 @@ export function resolveApiKey(body = {}) {
   if (body.secretProfile === 'roller') return process.env.ROLLER_OMNI_API_KEY || '';
   if (body.secretProfile === 'wgi') return process.env.WGI_OMNI_API_KEY || '';
   if (body.secretProfile === 'angle') return process.env.ANGLE_OMNI_API_KEY || '';
+  if (body.secretProfile === 'pantry') return process.env.PANTRY_OMNI_API_KEY || '';
   const host = hostOf(body.vanityDomain);
   if (host.includes('trial.omniapp.co')) return process.env.SEATAC_OMNI_API_KEY || '';
   if (host.includes('exploreomni')) return process.env.OMNI_API_KEY || '';
@@ -58,6 +60,7 @@ export function resolveEmbedSecret(body = {}) {
   if (body.secretProfile === 'roller') return process.env.ROLLER_EMBED_SECRET || '';
   if (body.secretProfile === 'wgi') return process.env.WGI_EMBED_SECRET || '';
   if (body.secretProfile === 'angle') return process.env.ANGLE_EMBED_SECRET || '';
+  if (body.secretProfile === 'pantry') return process.env.PANTRY_EMBED_SECRET || '';
   const host = hostOf(body.vanityDomain);
   if (host.includes('trial.omniapp.co')) return process.env.SEATAC_EMBED_SECRET || '';
   if (host.includes('exploreomni')) return process.env.OMNI_EMBED_SECRET || '';
