@@ -1049,12 +1049,12 @@ const PANTRY_BRAND = {
   showDashboardTab: false,
   hiddenTabs: ['overview', 'aichat', 'hub'],
   appTabs: PANTRY_APP_TABS,
-  // QUERIER on demo-dbt for the app; Demo Connection revoked.
-  embedConnectionRoles: { [PANTRY_CONNECTION_ID]: 'QUERIER', [DEMO_CONNECTION_ID]: 'NO_ACCESS' },
+  // RESTRICTED_QUERIER on demo-dbt for the app; Demo Connection revoked.
+  embedConnectionRoles: { [PANTRY_CONNECTION_ID]: 'RESTRICTED_QUERIER', [DEMO_CONNECTION_ID]: 'NO_ACCESS' },
   aiConnectionId: PANTRY_CONNECTION_ID,
-  aiConnectionRole: 'QUERIER',
+  aiConnectionRole: 'RESTRICTED_QUERIER',
   allConnections: [],
-  hubConnectionRole: 'QUERIER',
+  hubConnectionRole: 'RESTRICTED_QUERIER',
   revokeConnectionIds: [DEMO_CONNECTION_ID],
   // No airport_region (hides Flights) and no user attributes.
   embedSendRegionAttribute: false,
@@ -1063,7 +1063,7 @@ const PANTRY_BRAND = {
 }
 
 const PANTRY_LOGINS = {
-  pantry: { name: 'Pantry', mode: 'SINGLE_CONTENT', folderRole: 'VIEWER' },
+  pantry: { name: 'Pantry', mode: 'SINGLE_CONTENT', folderRole: 'EDITOR' },
 }
 
 const ACENDA_LOGINS = {
