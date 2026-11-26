@@ -56,7 +56,7 @@ export default function Dashboard({ onLogout }) {
   }))
   const withExtras = BASE_TABS.flatMap(t => (t.id === 'aichat' ? [t, ...extraTabs] : [t]))
 
-  // A brand can drop base tabs entirely (e.g. Pantry: no Overview, AI Chat or Hub).
+  // A brand can drop base tabs entirely (e.g. no Overview, AI Chat or Hub).
   const hiddenTabs = new Set(Array.isArray(brand.hiddenTabs) ? brand.hiddenTabs : [])
 
   const configuredTabs = withExtras.filter(t => {

@@ -1018,54 +1018,6 @@ const ADF_LOGINS = {
   brian: { name: 'Brian', accessScope: 'angle:am:Brian Vu', label: 'Account manager · Brian Vu', mode: 'SINGLE_CONTENT', folderRole: 'VIEWER' },
 }
 
-// ── Pantry (Office pantry app) ────────────────────────────────────────
-// Office pantry app (64f0a0fa) on demo-dbt: browse products and add them to a
-// basket saved per user in pantry_basket. The topic lives in the base model,
-// so there is no tenant_extension and no user attributes. No Overview, AI Chat
-// or Hub: the portal lands straight on the app. No password. Secrets via the
-// 'pantry' secret profile.
-export const PANTRY_LOGO = '/brands/pantry-logo.svg'
-const PANTRY_CONNECTION_ID = 'aa611249-952f-4a67-a3be-b415a692101b'
-
-const PANTRY_APP_TABS = [
-  { id: 'office-pantry', label: 'Office pantry', path: '/apps/64f0a0fa' },
-]
-
-const PANTRY_BRAND = {
-  ...defaultBrand,
-  configured: true,
-  name: 'Pantry',
-  logo: '',
-  logoUrl: PANTRY_LOGO,
-  primaryColor: '#2F7D4F',
-  secondaryColor: '#E8833A',
-  description: 'Browse the office pantry and add what you need to your basket.',
-  omniApiKey: 'env',
-  embedSecret: 'env',
-  embedSecretProfile: 'pantry',
-  embedVanityDomain: 'trial.omniapp.co',
-  embedDashboardPath: PANTRY_APP_TABS[0].path,
-  embedThemeId: '',
-  showDashboardTab: false,
-  hiddenTabs: ['overview', 'aichat', 'hub'],
-  appTabs: PANTRY_APP_TABS,
-  // RESTRICTED_QUERIER on demo-dbt for the app; Demo Connection revoked.
-  embedConnectionRoles: { [PANTRY_CONNECTION_ID]: 'RESTRICTED_QUERIER', [DEMO_CONNECTION_ID]: 'NO_ACCESS' },
-  aiConnectionId: PANTRY_CONNECTION_ID,
-  aiConnectionRole: 'RESTRICTED_QUERIER',
-  allConnections: [],
-  hubConnectionRole: 'RESTRICTED_QUERIER',
-  revokeConnectionIds: [DEMO_CONNECTION_ID],
-  // No airport_region (hides Flights) and no user attributes.
-  embedSendRegionAttribute: false,
-  embedSendUserAttributes: false,
-  embedEntityKey: 'Pantry',
-}
-
-const PANTRY_LOGINS = {
-  pantry: { name: 'Pantry', mode: 'SINGLE_CONTENT', folderRole: 'EDITOR' },
-}
-
 const ACENDA_LOGINS = {
   acenda: { name: 'Acenda' },
 }
@@ -1110,12 +1062,11 @@ export function loginBrandFor(rawId) {
   if (WGI_LOGINS[id] && ADF_LOGINS[id]) return null
   if (WGI_LOGINS[id]) return { logo: WGI_LOGO, name: 'Wealth Group India' }
   if (ADF_LOGINS[id]) return { logo: ADF_LOGO, name: 'Auto Dealer Finance' }
-  if (PANTRY_LOGINS[id]) return { logo: PANTRY_LOGO, name: 'Pantry' }
   return null
 }
 
 // Logins that take no password (the field hides itself in the UI).
-const PASSWORDLESS_LOGINS = new Set(['education', ...Object.keys(FLEET_LOGINS), ...Object.keys(BEAMTREE_LOGINS), ...Object.keys(CBA_LOGINS), ...Object.keys(KERNEL_LOGINS), ...Object.keys(ACENDA_LOGINS), ...Object.keys(ROLLER_LOGINS), ...Object.keys(PANTRY_LOGINS)])
+const PASSWORDLESS_LOGINS = new Set(['education', ...Object.keys(FLEET_LOGINS), ...Object.keys(BEAMTREE_LOGINS), ...Object.keys(CBA_LOGINS), ...Object.keys(KERNEL_LOGINS), ...Object.keys(ACENDA_LOGINS), ...Object.keys(ROLLER_LOGINS)])
 
 export function isPasswordlessLogin(rawId) {
   return PASSWORDLESS_LOGINS.has((rawId || '').trim().toLowerCase())
@@ -1204,21 +1155,6 @@ export function resolveLogin(rawId, password) {
         embedMode: wgi.mode,
         entityFolderRole: wgi.folderRole,
         userAttributes: { tenant_extension: 'wealth_group_india', access_scope: wgi.accessScope },
-      },
-    }
-  }
-
-  // Pantry — no password. Lands straight on the Office pantry app.
-  const pantry = PANTRY_LOGINS[id]
-  if (pantry) {
-    return {
-      ok: true,
-      brand: PANTRY_BRAND,
-      user: {
-        ...resolveUser(id),
-        name: pantry.name,
-        embedMode: pantry.mode,
-        entityFolderRole: pantry.folderRole,
       },
     }
   }
